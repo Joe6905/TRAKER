@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gather — Group Location Tracker</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Syne:wght@700;800&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #f5f4f0; --surface: #ffffff; --border: #e4e2dc;
+      --text: #1a1916; --muted: #8a8880; --accent: #2d6a4f;
+      --danger: #c0392b; --online: #27ae60; --offline: #bdc3c7;
+      --shadow: 0 4px 24px rgba(0,0,0,0.09); --radius: 14px;
+      --sidebar-w: 280px; --topbar-h: 52px;
+    }
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+    .join-screen { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; background: var(--bg); background-image: radial-gradient(circle at 20% 20%, #d8f3dc55 0%, transparent 50%), radial-gradient(circle at 80% 80%, #b7e4c755 0%, transparent 50%); }
+    .join-card { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 48px 40px 36px; width: 100%; max-width: 420px; box-shadow: var(--shadow); }
+    .join-header { text-align: center; margin-bottom: 36px; }
+    .logo-mark { font-size: 2.4rem; color: var(--accent); display: block; margin-bottom: 8px; }
+    .app-title { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; letter-spacing: -0.03em; }
+    .app-subtitle { margin-top: 6px; font-size: 0.88rem; color: var(--muted); }
+    .join-form { display: flex; flex-direction: column; gap: 16px; }
+    .input-group { display: flex; flex-direction: column; gap: 6px; }
+    .input-group label { font-size: 0.78rem; font-weight: 600; color: var(--muted); letter-spacing: 0.06em; text-transform: uppercase; }
+    .input-group input { width: 100%; padding: 12px 16px; border: 1.5px solid var(--border); border-radius: var(--radius); font-size: 1rem; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); outline: none; transition: border-color 0.2s, box-shadow 0.2s; }
+    .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(45,106,79,0.12); background: var(--surface); }
+    .input-group input::placeholder { color: #ccc9c2; }
+    .join-btn { margin-top: 4px; padding: 14px; background: var(--accent); color: #fff; border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 10px; transition: background 0.2s; }
+    .join-btn:hover { background: #245c43; }
+    .join-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+    .error-box { font-size: 0.84rem; color: var(--danger); padding: 12px 14px; background: #fdecea; border-radius: 10px; border-left: 3px solid var(--danger); line-height: 1.6; }
+    .error-box code { background: rgba(0,0,0,0.07); padding: 1px 5px; border-radius: 4px; font-size: 0.9em; }
+    .debug-box { font-size: 0.8rem; color: #444; padding: 10px 14px; background: #eef7f1; border-radius: 10px; border-left: 3px solid var(--accent); font-family: monospace; line-height: 1.6; }
+    .join-hint { margin-top: 20px; font-size: 0.78rem; color: var(--muted); text-align: center; line-height: 1.5; }
+    .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,0.4); border-top-color: #fff; border-radius: 50%; animation: spin 0.7s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .map-screen { position: fixed; inset: 0; display: flex; flex-direction: column; }
+    .top-bar { height: var(--topbar-h); background: var(--surface); border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 16px; z-index: 1000; flex-shrink: 0; }
+    .top-bar-left { display: flex; align-items: center; gap: 10px; }
+    .logo-mark-sm { font-size: 1.3rem; color: var(--accent); }
+    .group-label { font-size: 0.8rem; color: var(--muted); }
+    .group-label strong { color: var(--text); font-weight: 600; }
+    .top-bar-right { display: flex; align-items: center; gap: 8px; }
+    .icon-btn { width: 36px; height: 36px; border: 1.5px solid var(--border); border-radius: 10px; background: transparent; cursor: pointer; font-size: 1rem; display: flex; align-items: center; justify-content: center; }
+    .icon-btn:hover { background: var(--bg); }
+    .leave-btn { padding: 7px 16px; background: transparent; border: 1.5px solid #e0b0ad; border-radius: 10px; color: var(--danger); font-size: 0.85rem; font-weight: 600; font-family: 'DM Sans', sans-serif; cursor: pointer; }
+    .leave-btn:hover { background: #fdecea; }
+    #map { flex: 1; z-index: 0; }
+    .sidebar { position: absolute; top: var(--topbar-h); right: 0; width: var(--sidebar-w); height: calc(100% - var(--topbar-h)); background: var(--surface); border-left: 1px solid var(--border); z-index: 500; display: flex; flex-direction: column; transform: translateX(0); transition: transform 0.3s; overflow: hidden; }
+    .sidebar.collapsed { transform: translateX(100%); }
+    .sidebar-header { padding: 18px 20px 12px; border-bottom: 1px solid var(--border); display: flex; align-items: baseline; justify-content: space-between; }
+    .sidebar-header h2 { font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700; }
+    .member-count { font-size: 0.75rem; color: var(--muted); }
+    .member-list { list-style: none; overflow-y: auto; flex: 1; padding: 8px 0; }
+    .member-item { display: flex; align-items: center; gap: 12px; padding: 12px 20px; border-bottom: 1px solid #f0ede8; cursor: pointer; }
+    .member-item:hover { background: var(--bg); }
+    .member-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+    .member-info { flex: 1; min-width: 0; }
+    .member-name { font-size: 0.9rem; font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .member-status { font-size: 0.72rem; margin-top: 2px; }
+    .member-distance { font-size: 0.78rem; color: var(--muted); }
+    .gather-marker { border-radius: 50% 50% 50% 0; transform: rotate(-45deg); border: 2px solid white; box-shadow: 0 2px 8px rgba(0,0,0,0.25); }
+    .leaflet-popup-content-wrapper { border-radius: 12px !important; font-family: 'DM Sans', sans-serif !important; }
+    .popup-name { font-weight: 600; }
+    .popup-status { font-size: 0.78rem; color: var(--muted); margin-top: 2px; }
+    .hidden { display: none !important; }
+
+    @media (max-width: 600px) {
+      .join-card { padding: 32px 20px 24px; }
+      .sidebar { width: 100%; top: auto; bottom: 0; left: 0; height: 50%; border-left: none; border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; }
+      .sidebar.collapsed { transform: translateY(100%); }
+    }
+  </style>
+</head>
+<body>
+
+<!-- JOIN SCREEN -->
+<div id="join-screen" class="join-screen">
+  <div class="join-card">
+    <div class="join-header">
+      <div class="logo-mark">◎</div>
+      <h1 class="app-title">Gather</h1>
+      <p class="app-subtitle">Real-time group location sharing</p>
+    </div>
+    <div class="join-form">
+      <div class="input-group">
+        <label for="name-input">Your Name</label>
+        <input type="text" id="name-input" placeholder="e.g. Alex" maxlength="30" autocomplete="off" />
+      </div>
+      <div class="input-group">
+        <label for="group-input">Group Code</label>
+        <input type="text" id="group-input" placeholder="e.g. HIKING42" maxlength="20" autocomplete="off" />
+      </div>
+      <button id="join-btn" class="join-btn">
+        <span id="join-btn-text">Join Group</span>
+        <span id="join-spinner" class="spinner hidden"></span>
+      </button>
+      <div id="error-box" class="error-box hidden"></div>
+      <div id="debug-box" class="debug-box hidden"></div>
+    </div>
+    <p class="join-hint">Enter any code to create a new group, or share a code to join an existing one.</p>
+  </div>
+</div>
+
+<!-- MAP SCREEN -->
+<div id="map-screen" class="map-screen hidden">
+  <div class="top-bar">
+    <div class="top-bar-left">
+      <span class="logo-mark-sm">◎</span>
+      <span class="group-label">GROUP: <strong id="display-group-code"></strong></span>
+    </div>
+    <div class="top-bar-right">
+      <button id="toggle-sidebar-btn" class="icon-btn">☰</button>
+      <button id="leave-btn" class="leave-btn">Leave</button>
+    </div>
+  </div>
+  <div id="map"></div>
+  <div id="sidebar" class="sidebar">
+    <div class="sidebar-header">
+      <h2>Members</h2>
+      <span id="member-count" class="member-count">0 online</span>
+    </div>
+    <ul id="member-list" class="member-list"></ul>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+
+<script type="module">
+import { initializeApp }   from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getFirestore, doc, setDoc, deleteDoc, collection, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* ─── Firebase Config ─── */
+const firebaseConfig = {
+  apiKey:            "AIzaSyBXE7dFGSdVG5Kiq_FxMskvsy1AHLzku0M",
+  authDomain:        "gather-d6ad1.firebaseapp.com",
+  projectId:         "gather-d6ad1",
+  storageBucket:     "gather-d6ad1.firebasestorage.app",
+  messagingSenderId: "407919329269",
+  appId:             "1:407919329269:web:d2add0e50407d96e192abc"
+};
+
+/* ─── DOM refs ─── */
+const $ = id => document.getElementById(id);
+const joinScreen    = $('join-screen');
+const mapScreen     = $('map-screen');
+const nameInput     = $('name-input');
+const groupInput    = $('group-input');
+const joinBtn       = $('join-btn');
+const joinBtnText   = $('join-btn-text');
+const joinSpinner   = $('join-spinner');
+const errorBox      = $('error-box');
+const debugBox      = $('debug-box');
+const leaveBtn      = $('leave-btn');
+const toggleSideBtn = $('toggle-sidebar-btn');
+const displayCode   = $('display-group-code');
+const sidebar       = $('sidebar');
+const memberList    = $('member-list');
+const memberCount   = $('member-count');
+
+/* ─── UI helpers ─── */
+const showError = html => { errorBox.innerHTML = html; errorBox.classList.remove('hidden'); };
+const showDebug = txt  => { debugBox.textContent = txt; debugBox.classList.remove('hidden'); };
+const clearMsgs = ()   => { errorBox.classList.add('hidden'); debugBox.classList.add('hidden'); };
+const setLoading = on  => {
+  joinBtn.disabled = on;
+  joinBtnText.textContent = on ? 'Joining…' : 'Join Group';
+  joinSpinner.classList.toggle('hidden', !on);
+};
+
+/* ─── Utils ─── */
+const esc      = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const toRad    = d => d * Math.PI / 180;
+const fmtDist  = m => m < 1000 ? `${Math.round(m)}m` : `${(m/1000).toFixed(1)}km`;
+const genId    = () => Math.random().toString(36).slice(2,10) + Date.now().toString(36);
+const COLORS   = ['#e63946','#2a9d8f','#e76f51','#457b9d','#8338ec','#fb8500','#06d6a0','#ef476f','#118ab2','#ffd166'];
+const randColor = () => COLORS[Math.floor(Math.random() * COLORS.length)];
+function calcDist(lat1,lng1,lat2,lng2){
+  const dLat=toRad(lat2-lat1), dLng=toRad(lng2-lng1);
+  const a=Math.sin(dLat/2)**2+Math.cos(toRad(lat1))*Math.cos(toRad(lat2))*Math.sin(dLng/2)**2;
+  return 6371000*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function timeAgo(ts){
+  const s=Math.floor((Date.now()-(ts||0))/1000);
+  return s<60?`${s}s ago`:s<3600?`${Math.floor(s/60)}m ago`:`${Math.floor(s/3600)}h ago`;
+}
+
+/* ─── State ─── */
+let db, map, watchId=null, unsubscribe=null, memberDocRef=null;
+let memberId=null, groupCode=null, myLat=null, myLng=null, updateInterval=null, sidebarOpen=true;
+const markers = {};
+
+/* ─── Init Firebase ─── */
+try {
+  const fbApp = initializeApp(firebaseConfig);
+  db = getFirestore(fbApp);
+  showDebug('✅ Firebase ready — fill in your name and group code');
+} catch(e) {
+  showError('❌ Firebase failed to load: ' + e.message);
+}
+
+/* ─── Force uppercase group code ─── */
+groupInput.addEventListener('input', () => {
+  const p = groupInput.selectionStart;
+  groupInput.value = groupInput.value.toUpperCase();
+  groupInput.setSelectionRange(p, p);
+});
+
+/* ─── Join handlers ─── */
+joinBtn.addEventListener('click', handleJoin);
+[nameInput, groupInput].forEach(el =>
+  el.addEventListener('keydown', e => { if(e.key === 'Enter') handleJoin(); })
+);
+
+function handleJoin() {
+  const name = nameInput.value.trim();
+  const code = groupInput.value.trim().toUpperCase();
+  clearMsgs();
+  if (!name) return showError('⚠️ Please enter your name.');
+  if (!code) return showError('⚠️ Please enter a group code.');
+  if (!db)   return showError('❌ Firebase not initialised. Refresh the page.');
+  if (!navigator.geolocation) return showError('❌ Geolocation is not supported by your browser.');
+
+  setLoading(true);
+  showDebug('📍 Requesting location permission…');
+
+  navigator.geolocation.getCurrentPosition(
+    pos => {
+      myLat = pos.coords.latitude;
+      myLng = pos.coords.longitude;
+      showDebug(`📍 Location found: ${myLat.toFixed(5)}, ${myLng.toFixed(5)}\n⏳ Writing to Firestore…`);
+      joinGroup(name, code);
+    },
+    err => {
+      setLoading(false);
+      const msgs = {
+        1: `❌ <b>Location permission denied.</b><br>
+            Click the <b>🔒 lock icon</b> in your browser's address bar → <b>Allow Location</b> → reload the page.`,
+        2: `❌ <b>Location unavailable.</b><br>
+            Make sure GPS / Location Services is <b>turned ON</b> on your device.`,
+        3: `❌ <b>Location timed out.</b><br>Please try again.`
+      };
+      showError(msgs[err.code] || '❌ Location error: ' + err.message);
+    },
+    { timeout: 15000, enableHighAccuracy: false }
+  );
+}
+
+async function joinGroup(name, code) {
+  try {
+    groupCode    = code;
+    memberId     = genId();
+    const color  = randColor();
+    memberDocRef = doc(db, 'groups', code, 'members', memberId);
+
+    await setDoc(memberDocRef, {
+      name, latitude: myLat, longitude: myLng,
+      lastUpdated: Date.now(), color
+    });
+
+    clearMsgs();
+    showMapScreen(code);
+    startTracking(name, color);
+    subscribeToGroup(code);
+    setLoading(false);
+
+  } catch(err) {
+    setLoading(false);
+    console.error('Firestore write error:', err);
+
+    if (err.code === 'permission-denied') {
+      showError(`
+        ❌ <b>Firestore permission denied.</b><br><br>
+        You need to set Firestore security rules to allow access:<br><br>
+        1. Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">console.firebase.google.com</a><br>
+        2. Open your project → <b>Firestore Database</b><br>
+        3. Click the <b>Rules</b> tab<br>
+        4. Replace everything with:<br>
+        <code>rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}</code><br>
+        5. Click <b>Publish</b>
+      `);
+    } else {
+      showError(`❌ Firestore error (${err.code}): ${err.message}`);
+    }
+  }
+}
+
+/* ─── Show map ─── */
+function showMapScreen(code) {
+  joinScreen.classList.add('hidden');
+  mapScreen.classList.remove('hidden');
+  displayCode.textContent = code;
+
+  // Small delay so the div is visible before Leaflet measures it
+  setTimeout(() => {
+    if (!map) {
+      map = L.map('map').setView([myLat, myLng], 15);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+        maxZoom: 19
+      }).addTo(map);
+    } else {
+      map.setView([myLat, myLng], 15);
+      map.invalidateSize();
+    }
+  }, 150);
+}
+
+/* ─── Geolocation tracking ─── */
+function startTracking(name, color) {
+  watchId = navigator.geolocation.watchPosition(
+    pos => { myLat = pos.coords.latitude; myLng = pos.coords.longitude; },
+    err  => console.warn('Watch position error:', err),
+    { enableHighAccuracy: true, maximumAge: 5000 }
+  );
+
+  // Write to Firestore every 7 seconds
+  updateInterval = setInterval(async () => {
+    if (!myLat || !memberDocRef) return;
+    try {
+      await setDoc(memberDocRef, {
+        name, latitude: myLat, longitude: myLng,
+        lastUpdated: Date.now(), color
+      }, { merge: true });
+    } catch(e) { console.error('Periodic update failed:', e); }
+  }, 7000);
+}
+
+/* ─── Firestore real-time listener ─── */
+function subscribeToGroup(code) {
+  const ref = collection(db, 'groups', code, 'members');
+  unsubscribe = onSnapshot(ref,
+    snapshot => {
+      const now = Date.now();
+      const members = [];
+      snapshot.forEach(snap => {
+        const d = snap.data(), id = snap.id;
+        const online = (now - (d.lastUpdated || 0)) < 60000;
+        members.push({ id, ...d, online, isMe: id === memberId });
+        updateMarker(id, d, online, id === memberId);
+      });
+      // Remove markers whose docs were deleted
+      Object.keys(markers).forEach(id => {
+        if (!members.find(m => m.id === id)) {
+          if (map) map.removeLayer(markers[id].marker);
+          delete markers[id];
+        }
+      });
+      renderSidebar(members);
+    },
+    err => console.error('onSnapshot error:', err)
+  );
+}
+
+/* ─── Markers ─── */
+function markerIcon(color, online) {
+  return L.divIcon({
+    className: '',
+    html: `<div class="gather-marker" style="width:20px;height:20px;background:${color};opacity:${online?1:0.4}"></div>`,
+    iconSize:[20,20], iconAnchor:[10,20], popupAnchor:[0,-22]
+  });
+}
+function updateMarker(id, data, online, isMe) {
+  if (!map || data.latitude == null) return;
+  const { latitude:lat, longitude:lng, name, color, lastUpdated } = data;
+  const popup = `
+    <div class="popup-name">${esc(name)}${isMe?' <span style="color:#8a8880;font-size:.8em">(you)</span>':''}</div>
+    <div class="popup-status">${online?'🟢 Online':'⚪ Last seen '+timeAgo(lastUpdated)}</div>`;
+  if (markers[id]) {
+    markers[id].marker.setLatLng([lat,lng]).setIcon(markerIcon(color,online)).setPopupContent(popup);
+  } else {
+    markers[id] = { marker: L.marker([lat,lng],{icon:markerIcon(color,online)}).addTo(map).bindPopup(popup) };
+  }
+}
+
+/* ─── Sidebar ─── */
+function renderSidebar(members) {
+  memberCount.textContent = `${members.filter(m=>m.online).length} online`;
+  members.sort((a,b) => b.online - a.online || a.name.localeCompare(b.name));
+  memberList.innerHTML = '';
+  members.forEach(m => {
+    const dist = (!m.isMe && myLat!=null && m.latitude!=null)
+      ? calcDist(myLat, myLng, m.latitude, m.longitude) : null;
+    const li = document.createElement('li');
+    li.className = 'member-item';
+    li.innerHTML = `
+      <div class="member-dot" style="background:${m.color};opacity:${m.online?1:0.4}"></div>
+      <div class="member-info">
+        <div class="member-name">${esc(m.name)}${m.isMe?' <span style="color:#8a8880;font-size:.78em">(you)</span>':''}</div>
+        <div class="member-status" style="color:${m.online?'var(--online)':'var(--offline)'}">
+          ${m.online?'● Online':'○ Offline'}</div>
+      </div>
+      ${dist!==null?`<div class="member-distance">${fmtDist(dist)}</div>`:''}`;
+    li.addEventListener('click', () => {
+      if (m.latitude && map) {
+        map.flyTo([m.latitude, m.longitude], 16, {duration:1});
+        if (markers[m.id]) markers[m.id].marker.openPopup();
+      }
+    });
+    memberList.appendChild(li);
+  });
+}
+
+/* ─── Leave ─── */
+leaveBtn.addEventListener('click', async () => {
+  if (watchId !== null)  { navigator.geolocation.clearWatch(watchId); watchId = null; }
+  if (updateInterval)    { clearInterval(updateInterval); updateInterval = null; }
+  if (unsubscribe)       { unsubscribe(); unsubscribe = null; }
+  if (memberDocRef)      { try { await deleteDoc(memberDocRef); } catch(e){} memberDocRef = null; }
+  Object.values(markers).forEach(({marker}) => map && map.removeLayer(marker));
+  Object.keys(markers).forEach(k => delete markers[k]);
+  memberId = groupCode = myLat = myLng = null;
+  memberList.innerHTML = '';
+  mapScreen.classList.add('hidden');
+  joinScreen.classList.remove('hidden');
+  nameInput.value = groupInput.value = '';
+  showDebug('✅ Firebase ready — fill in your name and group code');
+});
+
+/* ─── Sidebar toggle ─── */
+toggleSideBtn.addEventListener('click', () => {
+  sidebarOpen = !sidebarOpen;
+  sidebar.classList.toggle('collapsed', !sidebarOpen);
+  setTimeout(() => map && map.invalidateSize(), 320);
+});
+</script>
+</body>
+</html>
