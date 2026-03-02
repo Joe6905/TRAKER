@@ -839,38 +839,51 @@ async function joinGroup(name, code, pass){
     /* ── Fetch all existing members for IP + name checks ── */
     const existingSnap = await getDocs(collection(db, 'groups', code, 'members'));
 
-    /* ── 1. IP check: only one username per IP per group ── */
-    if (myIp) {
-      const ipConflict = existingSnap.docs.find(d => {
-        const data = d.data();
-        return !data.kicked && data.ip === myIp;
-      });
-      if (ipConflict) {
-        setLoading(false);
-        showError(`⚠️ Your device is already in this group as <strong>"${esc(ipConflict.data().name)}"</strong>. Only one account per device is allowed.`);
-        return;
-      }
-    }
+    /* ══════════════════════════════════════
+       IP + NAME MATCHING LOGIC
+       - IP & name both match  → silent auto-resume (same person, same device)
+       - IP matches, name differs → block (one username per IP per group)
+       - Name matches, IP differs → block (name taken by someone else)
+       - Both new               → create fresh member
+       - Same IP, different group → always allowed
+    ══════════════════════════════════════ */
+    const ipDoc   = myIp  ? existingSnap.docs.find(d => !d.data().kicked && d.data().ip   === myIp)  : null;
+    const nameDoc = existingSnap.docs.find(d => !d.data().kicked && d.data().name?.trim().toLowerCase() === name.trim().toLowerCase());
 
-    /* ── 2. Name check: no duplicate names ── */
-    const existingDoc = existingSnap.docs.find(d => {
-      const data = d.data();
-      return !data.kicked && data.name?.trim().toLowerCase() === name.trim().toLowerCase();
-    });
-    if (existingDoc) {
+    if (ipDoc && nameDoc && ipDoc.id === nameDoc.id) {
+      /* ── CASE 1: IP + name both match → silent resume ── */
+      memberId     = ipDoc.id;
+      myColor      = ipDoc.data().color;
+      memberDocRef = doc(db, 'groups', code, 'members', memberId);
+      if (memberId === adminId) { isAdmin = true; }
+      await setDoc(memberDocRef, {
+        name, latitude: myLat, longitude: myLng,
+        lastUpdated: Date.now(), color: myColor,
+        kicked: false, ip: myIp || 'unknown'
+      }, { merge: true });
+      if (isAdmin) await setDoc(groupDocRef, { adminId: memberId }, { merge: true });
+
+    } else if (ipDoc && (!nameDoc || ipDoc.id !== nameDoc?.id)) {
+      /* ── CASE 2: IP already in group under a different name → block (no name shown) ── */
       setLoading(false);
-      showError(`⚠️ The name <strong>"${esc(name)}"</strong> is already taken in group <strong>${code}</strong>. Please choose a different name.`);
+      showError('⚠️ Your device is already registered in this group. Only one account per device is allowed.');
+      return;
+
+    } else if (nameDoc && !ipDoc) {
+      /* ── CASE 3: Name taken by a different device → block ── */
+      setLoading(false);
+      showError(`⚠️ The name <strong>"${esc(name)}"</strong> is already taken. Please choose a different name.`);
       nameInput.focus();
       return;
-    }
 
-    /* ── NEW member: write doc with IP ── */
-    await setDoc(memberDocRef, {
-      name, latitude: myLat, longitude: myLng,
-      lastUpdated: Date.now(), color: myColor,
-      kicked: false,
-      ip: myIp || 'unknown'
-    });
+    } else {
+      /* ── CASE 4: Both new → fresh member ── */
+      await setDoc(memberDocRef, {
+        name, latitude: myLat, longitude: myLng,
+        lastUpdated: Date.now(), color: myColor,
+        kicked: false, ip: myIp || 'unknown'
+      });
+    }
 
     clearMsgs();
     // Reset password UI state
