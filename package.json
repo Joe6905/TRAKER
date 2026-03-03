@@ -1,0 +1,35 @@
+{
+  "name": "gather-web-app",
+  "version": "1.0.0",
+  "description": "Gather - Real-time group location sharing web application",
+  "main": "index.html",
+  "scripts": {
+    "start": "npx http-server -p 3000 -o gather-enhanced.html",
+    "dev": "npx live-server --port=3000 --open=gather-enhanced.html",
+    "serve": "npx serve -p 3000",
+    "build": "echo 'Web app is ready to deploy - upload gather-enhanced.html to your hosting'"
+  },
+  "keywords": [
+    "location-sharing",
+    "real-time",
+    "maps",
+    "chat",
+    "firebase",
+    "group-tracking"
+  ],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "http-server": "^14.1.1",
+    "live-server": "^1.2.2",
+    "serve": "^14.2.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "bugs": {
+    "url": ""
+  },
+  "homepage": ""
+}
