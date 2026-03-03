@@ -343,6 +343,12 @@
       align-items: center; justify-content: center; font-weight: 700;
     }
     .chat-msg.me:hover .chat-msg-delete { display: flex; }
+    .chat-msg-photo {
+      max-width: 100%; border-radius: 12px; cursor: pointer;
+      transition: transform .2s; margin-top: 4px; display: block;
+    }
+    .chat-msg-photo:hover { transform: scale(1.02); }
+    .photo-caption { margin-top: 6px; font-size: .82rem; line-height: 1.4; }
     .chat-system { text-align: center; font-size: .73rem; color: var(--muted); font-style: italic; padding: 4px 0; animation: msgIn .2s ease; }
     .chat-empty { text-align: center; color: var(--muted); font-size: .82rem; padding: 30px 20px; flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; }
     
@@ -370,18 +376,20 @@
     }
     .chat-input:focus { border-color: var(--accent); }
     .chat-input::placeholder { color: var(--muted); }
-    .chat-send-btn, .voice-chat-btn, .voice-call-btn {
+    .chat-send-btn, .voice-chat-btn, .voice-call-btn, .photo-btn {
       width: 36px; height: 36px; border: none; border-radius: 50%;
       background: var(--accent); color: var(--msg-me-txt); cursor: pointer;
       font-size: 1rem; display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; transition: opacity .2s;
     }
-    .chat-send-btn:hover, .voice-chat-btn:hover, .voice-call-btn:hover { opacity: .85; }
-    .chat-send-btn:disabled, .voice-chat-btn:disabled, .voice-call-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .chat-send-btn:hover, .voice-chat-btn:hover, .voice-call-btn:hover, .photo-btn:hover { opacity: .85; }
+    .chat-send-btn:disabled, .voice-chat-btn:disabled, .voice-call-btn:disabled, .photo-btn:disabled { opacity: .4; cursor: not-allowed; }
     .voice-chat-btn { background: #8e44ad; }
     .voice-call-btn { background: #e67e22; }
+    .photo-btn { background: #3498db; }
     .voice-chat-btn.recording { background: var(--danger); animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .6; } }
+    .photo-input { display: none; }
 
     /* Voice call modal */
     .voice-call-modal {
@@ -390,6 +398,29 @@
       z-index: 9500; padding: 24px; animation: fadeOverlay .15s ease;
     }
     .voice-call-modal.active { display: flex; }
+
+    /* Photo lightbox modal */
+    .photo-lightbox {
+      position: fixed; inset: 0; background: rgba(0,0,0,.9);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9600; padding: 24px; animation: fadeOverlay .2s ease;
+      cursor: pointer;
+    }
+    .photo-lightbox.active { display: flex; }
+    .photo-lightbox-img {
+      max-width: 90%; max-height: 90vh; border-radius: 8px;
+      box-shadow: 0 20px 80px rgba(0,0,0,.8);
+    }
+    .photo-lightbox-close {
+      position: absolute; top: 20px; right: 20px;
+      width: 44px; height: 44px; border-radius: 50%;
+      background: rgba(255,255,255,.2); backdrop-filter: blur(10px);
+      border: 2px solid rgba(255,255,255,.4);
+      color: #fff; font-size: 1.4rem; cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .photo-lightbox-close:hover { background: rgba(255,255,255,.3); }
     .voice-call-box {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 20px; padding: 32px 28px; max-width: 360px; width: 100%;
@@ -688,13 +719,23 @@
         <div class="typing-dot"></div>
       </div>
       <div class="chat-input-row">
+        <input type="file" id="photo-input" class="photo-input" accept="image/*" />
         <textarea id="chat-input" class="chat-input" placeholder="Type a message…" rows="1" maxlength="300"></textarea>
+        <button id="photo-btn" class="photo-btn" title="Send photo">📷</button>
         <button id="voice-chat-btn" class="voice-chat-btn" title="Voice message">🎤</button>
         <button id="voice-call-btn" class="voice-call-btn" title="Voice call">📞</button>
         <button id="chat-send-btn" class="chat-send-btn">➤</button>
       </div>
     </div>
   </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PHOTO LIGHTBOX
+══════════════════════════════════ -->
+<div id="photo-lightbox" class="photo-lightbox">
+  <button class="photo-lightbox-close" id="photo-lightbox-close">✕</button>
+  <img id="photo-lightbox-img" class="photo-lightbox-img" src="" alt="Photo" />
 </div>
 
 <!-- ══════════════════════════════════
@@ -814,6 +855,8 @@ const chatInput        = $('chat-input');
 const chatSendBtn      = $('chat-send-btn');
 const voiceChatBtn     = $('voice-chat-btn');
 const voiceCallBtn     = $('voice-call-btn');
+const photoBtn         = $('photo-btn');
+const photoInput       = $('photo-input');
 const typingIndicator  = $('typing-indicator');
 const themeBtn         = $('theme-btn');
 const nameThemeBtn     = $('name-theme-btn');
@@ -837,6 +880,9 @@ const voiceCallStatus  = $('voice-call-status');
 const voiceCallName    = $('voice-call-name');
 const voiceCallTimer   = $('voice-call-timer');
 const voiceCallEnd     = $('voice-call-end');
+const photoLightbox    = $('photo-lightbox');
+const photoLightboxImg = $('photo-lightbox-img');
+const photoLightboxClose = $('photo-lightbox-close');
 
 /* ══════════════════════════════════════
    CONFIRM MODAL
@@ -1370,6 +1416,9 @@ function subscribeToChat(code){
         } else if (d.isVoice) {
           const isMe = d.senderId === memberId;
           renderVoiceMsg(change.doc.id, d, isMe, firstLoad);
+        } else if (d.isPhoto) {
+          const isMe = d.senderId === memberId;
+          renderPhotoMsg(change.doc.id, d, isMe, firstLoad);
         } else {
           const isMe = d.senderId === memberId;
           memberLastMsg[d.senderId] = { text: d.text };
@@ -1432,6 +1481,33 @@ function renderVoiceMsg(docId, d, isMe, silent){
     </div>
     <div class="chat-msg-time">${fmtTime(ts)}</div>`;
   chatMessages.appendChild(div);
+  if (isMe) {
+    const delBtn = div.querySelector('.chat-msg-delete');
+    if (delBtn) delBtn.addEventListener('click', () => deleteMessage(docId));
+  }
+  if (!silent || isMe) scrollChat();
+}
+
+function renderPhotoMsg(docId, d, isMe, silent){
+  chatEmpty.classList.add('hidden');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+  div.dataset.docId = docId;
+  const ts = d.ts ? (d.ts.toMillis ? d.ts.toMillis() : d.ts) : Date.now();
+  div.innerHTML = `
+    ${!isMe ? `<div class="chat-msg-sender" style="color:${d.color||'var(--accent)'}">${esc(d.senderName)}</div>` : ''}
+    <div class="chat-msg-bubble">
+      <img src="${d.photoUrl}" alt="Photo" class="chat-msg-photo" data-photo-url="${d.photoUrl}" />
+      ${d.caption ? `<div class="photo-caption">${esc(d.caption)}</div>` : ''}
+      ${isMe ? `<div class="chat-msg-delete" data-doc-id="${docId}">✕</div>` : ''}
+    </div>
+    <div class="chat-msg-time">${fmtTime(ts)}</div>`;
+  chatMessages.appendChild(div);
+  
+  // Add click handler for photo lightbox
+  const photoImg = div.querySelector('.chat-msg-photo');
+  if (photoImg) photoImg.addEventListener('click', () => openPhotoLightbox(d.photoUrl));
+  
   if (isMe) {
     const delBtn = div.querySelector('.chat-msg-delete');
     if (delBtn) delBtn.addEventListener('click', () => deleteMessage(docId));
@@ -1545,6 +1621,95 @@ voiceChatBtn.addEventListener('click', async () => {
   } catch(e) {
     console.error('Microphone access denied:', e);
     alert('Microphone access denied. Please allow microphone access to send voice messages.');
+  }
+});
+
+/* ══════════════════════════════════════
+   PHOTO SHARING
+══════════════════════════════════════ */
+photoBtn.addEventListener('click', () => {
+  photoInput.click();
+});
+
+photoInput.addEventListener('change', async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  
+  // Validate file type
+  if (!file.type.startsWith('image/')) {
+    alert('Please select an image file.');
+    return;
+  }
+  
+  // Validate file size (max 5MB)
+  if (file.size > 5 * 1024 * 1024) {
+    alert('Image too large. Please select an image smaller than 5MB.');
+    return;
+  }
+  
+  try {
+    photoBtn.disabled = true;
+    
+    // Convert to base64
+    const reader = new FileReader();
+    reader.onloadend = async () => {
+      const base64 = reader.result;
+      
+      // Optional: Ask for caption
+      const caption = chatInput.value.trim();
+      chatInput.value = '';
+      chatInput.style.height = 'auto';
+      
+      try {
+        await addDoc(collection(db, 'groups', groupCode, 'chat'), {
+          isPhoto: true,
+          photoUrl: base64,
+          caption: caption || '',
+          senderId: memberId,
+          senderName: myName,
+          color: myColor,
+          ts: serverTimestamp()
+        });
+      } catch(e) {
+        console.error('Photo send error:', e);
+        alert('Failed to send photo. Please try again.');
+      }
+      
+      photoBtn.disabled = false;
+      photoInput.value = ''; // Reset input
+    };
+    
+    reader.readAsDataURL(file);
+  } catch(e) {
+    console.error('Photo processing error:', e);
+    photoBtn.disabled = false;
+    photoInput.value = '';
+  }
+});
+
+/* ══════════════════════════════════════
+   PHOTO LIGHTBOX
+══════════════════════════════════════ */
+function openPhotoLightbox(photoUrl) {
+  photoLightboxImg.src = photoUrl;
+  photoLightbox.classList.add('active');
+  document.body.style.overflow = 'hidden';
+}
+
+function closePhotoLightbox() {
+  photoLightbox.classList.remove('active');
+  document.body.style.overflow = '';
+  photoLightboxImg.src = '';
+}
+
+photoLightboxClose.addEventListener('click', closePhotoLightbox);
+photoLightbox.addEventListener('click', (e) => {
+  if (e.target === photoLightbox) closePhotoLightbox();
+});
+
+document.addEventListener('keydown', (e) => {
+  if (e.key === 'Escape' && photoLightbox.classList.contains('active')) {
+    closePhotoLightbox();
   }
 });
 
