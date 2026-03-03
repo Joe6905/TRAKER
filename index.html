@@ -66,26 +66,26 @@
     }
 
     /* ══════════════════════════════════════
-       JOIN SCREEN
+       NAME ENTRY SCREEN (NEW)
     ══════════════════════════════════════ */
-    .join-screen {
+    .name-screen {
       min-height: 100vh; display: flex; align-items: center;
       justify-content: center; padding: 24px; background: var(--bg);
       background-image: radial-gradient(circle at 20% 20%,#d8f3dc33 0%,transparent 50%),
                         radial-gradient(circle at 80% 80%,#b7e4c733 0%,transparent 50%);
       position: relative;
     }
-    .join-theme-toggle { position: absolute; top: 20px; right: 20px; }
-    .join-card {
+    .name-theme-toggle { position: absolute; top: 20px; right: 20px; }
+    .name-card {
       background: var(--surface); border: 1px solid var(--border);
       border-radius: 24px; padding: 48px 40px 36px; width: 100%; max-width: 420px;
       box-shadow: var(--shadow); transition: background .25s, border-color .25s;
     }
-    .join-header { text-align: center; margin-bottom: 36px; }
+    .name-header { text-align: center; margin-bottom: 36px; }
     .logo-mark { font-size: 2.4rem; color: var(--accent); display: block; margin-bottom: 8px; }
     .app-title { font-family: 'Syne', sans-serif; font-size: 2.2rem; font-weight: 800; letter-spacing: -.03em; }
     .app-subtitle { margin-top: 6px; font-size: .88rem; color: var(--muted); }
-    .join-form { display: flex; flex-direction: column; gap: 16px; }
+    .name-form { display: flex; flex-direction: column; gap: 16px; }
     .input-group { display: flex; flex-direction: column; gap: 6px; }
     .input-group label { font-size: .78rem; font-weight: 600; color: var(--muted); letter-spacing: .06em; text-transform: uppercase; }
     .input-group input {
@@ -96,30 +96,86 @@
     }
     .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(63,185,80,.15); background: var(--surface); }
     .input-group input::placeholder { color: var(--muted); opacity: .6; }
-    .join-btn {
+    .name-btn {
       margin-top: 4px; padding: 14px; background: var(--accent); color: var(--msg-me-txt);
       border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 600;
       font-family: 'DM Sans', sans-serif; cursor: pointer;
       display: flex; align-items: center; justify-content: center; gap: 10px; transition: opacity .2s;
     }
-    .join-btn:hover { opacity: .88; }
-    .join-btn:disabled { opacity: .6; cursor: not-allowed; }
+    .name-btn:hover { opacity: .88; }
+    .name-btn:disabled { opacity: .6; cursor: not-allowed; }
+
+    /* ══════════════════════════════════════
+       GROUP CHOICE SCREEN (NEW)
+    ══════════════════════════════════════ */
+    .group-choice-screen {
+      min-height: 100vh; display: flex; align-items: center;
+      justify-content: center; padding: 24px; background: var(--bg);
+      background-image: radial-gradient(circle at 20% 20%,#d8f3dc33 0%,transparent 50%),
+                        radial-gradient(circle at 80% 80%,#b7e4c733 0%,transparent 50%);
+      position: relative;
+    }
+    .choice-theme-toggle { position: absolute; top: 20px; right: 20px; }
+    .choice-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; padding: 48px 40px 36px; width: 100%; max-width: 420px;
+      box-shadow: var(--shadow); transition: background .25s, border-color .25s;
+    }
+    .choice-header { text-align: center; margin-bottom: 36px; }
+    .user-greeting { font-size: 1.1rem; color: var(--muted); margin-bottom: 8px; }
+    .user-greeting strong { color: var(--text); font-weight: 600; }
+    .choice-title { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; letter-spacing: -.02em; margin-bottom: 8px; }
+    .choice-buttons { display: flex; flex-direction: column; gap: 12px; }
+    .choice-btn {
+      padding: 16px; border: 2px solid var(--border); border-radius: var(--radius);
+      background: var(--surface); color: var(--text); font-size: 1rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all .2s;
+      display: flex; align-items: center; gap: 12px; justify-content: flex-start;
+    }
+    .choice-btn:hover { border-color: var(--accent); background: var(--accent-lt); transform: translateY(-2px); }
+    .choice-icon { font-size: 1.5rem; }
+    .choice-text { flex: 1; text-align: left; }
+    .choice-text-title { font-size: 1rem; font-weight: 600; }
+    .choice-text-desc { font-size: .8rem; color: var(--muted); margin-top: 2px; }
+
+    /* ══════════════════════════════════════
+       JOIN/CREATE GROUP SCREENS
+    ══════════════════════════════════════ */
+    .join-screen, .create-screen {
+      min-height: 100vh; display: flex; align-items: center;
+      justify-content: center; padding: 24px; background: var(--bg);
+      background-image: radial-gradient(circle at 20% 20%,#d8f3dc33 0%,transparent 50%),
+                        radial-gradient(circle at 80% 80%,#b7e4c733 0%,transparent 50%);
+      position: relative;
+    }
+    .join-theme-toggle { position: absolute; top: 20px; right: 20px; }
+    .join-back-btn, .create-back-btn {
+      position: absolute; top: 20px; left: 20px;
+      width: 36px; height: 36px; border: 1.5px solid var(--border); border-radius: 10px;
+      background: var(--surface2); cursor: pointer; font-size: 1.1rem;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s; color: var(--text);
+    }
+    .join-back-btn:hover, .create-back-btn:hover { background: var(--border); }
+    .join-card, .create-card {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 24px; padding: 48px 40px 36px; width: 100%; max-width: 420px;
+      box-shadow: var(--shadow); transition: background .25s, border-color .25s;
+    }
+    .join-header, .create-header { text-align: center; margin-bottom: 36px; }
+    .join-form, .create-form { display: flex; flex-direction: column; gap: 16px; }
+    .join-btn, .create-btn {
+      margin-top: 4px; padding: 14px; background: var(--accent); color: var(--msg-me-txt);
+      border: none; border-radius: var(--radius); font-size: 1rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 10px; transition: opacity .2s;
+    }
+    .join-btn:hover, .create-btn:hover { opacity: .88; }
+    .join-btn:disabled, .create-btn:disabled { opacity: .6; cursor: not-allowed; }
     .error-box { font-size: .84rem; color: var(--danger); padding: 12px 14px; background: rgba(248,81,73,.1); border-radius: 10px; border-left: 3px solid var(--danger); line-height: 1.6; }
     .error-box code { background: rgba(0,0,0,.1); padding: 1px 5px; border-radius: 4px; font-size: .9em; }
     .debug-box { font-size: .8rem; color: var(--accent); padding: 10px 14px; background: var(--accent-lt); border-radius: 10px; border-left: 3px solid var(--accent); line-height: 1.6; }
-    .join-hint { margin-top: 20px; font-size: .78rem; color: var(--muted); text-align: center; line-height: 1.5; }
-    /* Password row — shown only when creating a new group */
-    .password-row { display: flex; flex-direction: column; gap: 6px; }
-    .password-row.hidden { display: none !important; }
-    .new-group-badge {
-      display: inline-flex; align-items: center; gap: 5px;
-      font-size: .75rem; font-weight: 700; color: var(--admin-color);
-      background: var(--admin-lt); border: 1px solid var(--admin-color);
-      border-radius: 20px; padding: 4px 10px; margin-bottom: 2px;
-      animation: fadeIn .3s ease;
-    }
-    @keyframes fadeIn { from { opacity:0; transform:translateY(-4px);} to {opacity:1; transform:none;} }
-    .group-status-row { min-height: 28px; display: flex; align-items: center; }
+    .join-hint, .create-hint { margin-top: 20px; font-size: .78rem; color: var(--muted); text-align: center; line-height: 1.5; }
     .spinner { width: 18px; height: 18px; border: 2.5px solid rgba(255,255,255,.4); border-top-color: #fff; border-radius: 50%; animation: spin .7s linear infinite; }
     @keyframes spin { to { transform: rotate(360deg); } }
 
@@ -154,7 +210,6 @@
     .logo-mark-sm { font-size: 1.3rem; color: var(--accent); }
     .group-label { font-size: .8rem; color: var(--muted); }
     .group-label strong { color: var(--text); font-weight: 600; }
-    /* Admin crown badge in topbar */
     .admin-crown {
       font-size: .75rem; background: var(--admin-lt); color: var(--admin-color);
       border: 1px solid var(--admin-color); border-radius: 20px;
@@ -230,7 +285,6 @@
     }
     .sidebar-panel-header h3 { font-family: 'Syne', sans-serif; font-size: .9rem; font-weight: 700; }
     .member-count { font-size: .72rem; color: var(--muted); }
-    /* Admin: Delete Group button in header */
     .delete-group-btn {
       padding: 4px 10px; background: rgba(248,81,73,.1); border: 1px solid rgba(248,81,73,.5);
       border-radius: 8px; color: var(--danger); font-size: .72rem; font-weight: 700;
@@ -259,7 +313,6 @@
     .member-status { font-size: .71rem; margin-top: 2px; }
     .member-last-msg { font-size: .69rem; color: var(--muted); margin-top: 2px; font-style: italic; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .member-distance { font-size: .72rem; color: var(--muted); flex-shrink: 0; }
-    /* Admin kick button */
     .kick-btn {
       width: 26px; height: 26px; border-radius: 8px; border: 1px solid rgba(248,81,73,.4);
       background: transparent; color: var(--danger); cursor: pointer; font-size: .8rem;
@@ -274,17 +327,36 @@
       flex: 1; overflow-y: auto; padding: 14px 12px 8px;
       display: flex; flex-direction: column; gap: 10px; scroll-behavior: smooth;
     }
-    .chat-msg { display: flex; flex-direction: column; max-width: 82%; animation: msgIn .2s ease; }
+    .chat-msg { display: flex; flex-direction: column; max-width: 82%; animation: msgIn .2s ease; position: relative; }
     @keyframes msgIn { from { opacity:0; transform: translateY(6px); } to { opacity:1; transform:none; } }
     .chat-msg.me    { align-self: flex-end;   align-items: flex-end; }
     .chat-msg.other { align-self: flex-start; align-items: flex-start; }
     .chat-msg-sender { font-size: .67rem; color: var(--muted); margin-bottom: 3px; font-weight: 600; }
-    .chat-msg-bubble { padding: 8px 12px; border-radius: 16px; font-size: .85rem; line-height: 1.45; word-break: break-word; }
+    .chat-msg-bubble { padding: 8px 12px; border-radius: 16px; font-size: .85rem; line-height: 1.45; word-break: break-word; position: relative; }
     .chat-msg.me    .chat-msg-bubble { background: var(--msg-me);    color: var(--msg-me-txt);    border-bottom-right-radius: 4px; }
     .chat-msg.other .chat-msg-bubble { background: var(--msg-other); color: var(--msg-other-txt); border-bottom-left-radius: 4px; }
     .chat-msg-time { font-size: .63rem; color: var(--muted); margin-top: 3px; }
+    .chat-msg-delete {
+      position: absolute; top: -8px; right: -8px; width: 20px; height: 20px;
+      background: var(--danger); border-radius: 50%; border: 2px solid var(--surface);
+      color: #fff; font-size: .7rem; cursor: pointer; display: none;
+      align-items: center; justify-content: center; font-weight: 700;
+    }
+    .chat-msg.me:hover .chat-msg-delete { display: flex; }
     .chat-system { text-align: center; font-size: .73rem; color: var(--muted); font-style: italic; padding: 4px 0; animation: msgIn .2s ease; }
     .chat-empty { text-align: center; color: var(--muted); font-size: .82rem; padding: 30px 20px; flex: 1; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 6px; }
+    
+    /* Typing indicator */
+    .typing-indicator {
+      display: none; padding: 8px 12px; background: var(--surface2); border-radius: 16px;
+      max-width: 82%; align-self: flex-start; animation: msgIn .2s ease;
+    }
+    .typing-indicator.active { display: flex; align-items: center; gap: 4px; }
+    .typing-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--muted); animation: typingBounce 1.4s infinite; }
+    .typing-dot:nth-child(2) { animation-delay: .2s; }
+    .typing-dot:nth-child(3) { animation-delay: .4s; }
+    @keyframes typingBounce { 0%, 60%, 100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
     .chat-input-row {
       display: flex; gap: 8px; padding: 10px 12px;
       border-top: 1px solid var(--border); flex-shrink: 0;
@@ -298,14 +370,45 @@
     }
     .chat-input:focus { border-color: var(--accent); }
     .chat-input::placeholder { color: var(--muted); }
-    .chat-send-btn {
+    .chat-send-btn, .voice-chat-btn, .voice-call-btn {
       width: 36px; height: 36px; border: none; border-radius: 50%;
       background: var(--accent); color: var(--msg-me-txt); cursor: pointer;
       font-size: 1rem; display: flex; align-items: center; justify-content: center;
       flex-shrink: 0; transition: opacity .2s;
     }
-    .chat-send-btn:hover { opacity: .85; }
-    .chat-send-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .chat-send-btn:hover, .voice-chat-btn:hover, .voice-call-btn:hover { opacity: .85; }
+    .chat-send-btn:disabled, .voice-chat-btn:disabled, .voice-call-btn:disabled { opacity: .4; cursor: not-allowed; }
+    .voice-chat-btn { background: #8e44ad; }
+    .voice-call-btn { background: #e67e22; }
+    .voice-chat-btn.recording { background: var(--danger); animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: .6; } }
+
+    /* Voice call modal */
+    .voice-call-modal {
+      position: fixed; inset: 0; background: rgba(0,0,0,.75);
+      display: none; align-items: center; justify-content: center;
+      z-index: 9500; padding: 24px; animation: fadeOverlay .15s ease;
+    }
+    .voice-call-modal.active { display: flex; }
+    .voice-call-box {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 20px; padding: 32px 28px; max-width: 360px; width: 100%;
+      box-shadow: 0 20px 60px rgba(0,0,0,.3);
+      animation: slideUp .2s cubic-bezier(.4,0,.2,1);
+      text-align: center;
+    }
+    @keyframes slideUp { from { transform: translateY(16px); opacity:0; } to { transform:none; opacity:1; } }
+    .voice-call-icon { font-size: 3rem; margin-bottom: 16px; }
+    .voice-call-status { font-size: 1.1rem; font-weight: 600; margin-bottom: 8px; }
+    .voice-call-name { font-size: .9rem; color: var(--muted); margin-bottom: 20px; }
+    .voice-call-timer { font-size: 2rem; font-weight: 700; color: var(--accent); margin-bottom: 24px; font-family: monospace; }
+    .voice-call-actions { display: flex; gap: 12px; justify-content: center; }
+    .voice-call-end {
+      padding: 12px 24px; border: none; border-radius: var(--radius);
+      background: var(--danger); color: #fff; font-size: .95rem; font-weight: 600;
+      font-family: 'DM Sans', sans-serif; cursor: pointer; transition: opacity .15s;
+    }
+    .voice-call-end:hover { opacity: .88; }
 
     /* ══════════════════════════════════════
        CONFIRM MODAL
@@ -322,7 +425,6 @@
       box-shadow: 0 20px 60px rgba(0,0,0,.3);
       animation: slideUp .2s cubic-bezier(.4,0,.2,1);
     }
-    @keyframes slideUp { from { transform: translateY(16px); opacity:0; } to { transform:none; opacity:1; } }
     .modal-icon { font-size: 2.2rem; text-align: center; margin-bottom: 12px; }
     .modal-title { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 800; text-align: center; margin-bottom: 8px; }
     .modal-body { font-size: .88rem; color: var(--muted); text-align: center; line-height: 1.5; margin-bottom: 22px; }
@@ -367,12 +469,14 @@
     .popup-status { font-size: .77rem; color: #888; margin-top: 3px; }
     .popup-last-msg { font-size: .75rem; color: #777; margin-top: 7px; padding-top: 7px; border-top: 1px solid #eee; font-style: italic; max-width: 190px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .popup-actions { display: flex; gap: 6px; margin-top: 8px; flex-wrap: wrap; }
-    .popup-chat-link {
+    .popup-chat-link, .popup-call-link {
       display: inline-flex; align-items: center; gap: 4px;
       font-size: .73rem; color: #2d6a4f; font-weight: 700; cursor: pointer;
       border: 1px solid #2d6a4f; border-radius: 6px; padding: 3px 8px; transition: background .15s;
     }
-    .popup-chat-link:hover { background: #d8f3dc; }
+    .popup-chat-link:hover, .popup-call-link:hover { background: #d8f3dc; }
+    .popup-call-link { color: #e67e22; border-color: #e67e22; }
+    .popup-call-link:hover { background: #ffecd1; }
     .popup-kick-link {
       display: none; align-items: center; gap: 4px;
       font-size: .73rem; color: #c0392b; font-weight: 700; cursor: pointer;
@@ -398,7 +502,7 @@
     .member-list::-webkit-scrollbar-thumb, .chat-messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
     @media (max-width: 600px) {
-      .join-card { padding: 32px 20px 24px; }
+      .name-card, .choice-card, .join-card, .create-card { padding: 32px 20px 24px; }
       :root { --sidebar-w: 100%; }
       .sidebar { width: 100%; top: auto; bottom: 0; left: 0; height: 62%; border-left: none; border-top: 1px solid var(--border); border-radius: 20px 20px 0 0; }
       .sidebar.collapsed { transform: translateY(100%); }
@@ -410,42 +514,117 @@
 <body>
 
 <!-- ══════════════════════════════════
-     JOIN SCREEN
+     NAME ENTRY SCREEN
 ══════════════════════════════════ -->
-<div id="join-screen" class="join-screen">
+<div id="name-screen" class="name-screen">
+  <div class="name-theme-toggle">
+    <button class="theme-toggle-btn" id="name-theme-btn" title="Toggle dark mode">🌙</button>
+  </div>
+  <div class="name-card">
+    <div class="name-header">
+      <div class="logo-mark">◎</div>
+      <h1 class="app-title">Gather</h1>
+      <p class="app-subtitle">Real-time group location sharing</p>
+    </div>
+    <div class="name-form">
+      <div class="input-group">
+        <label for="name-input">Your Name</label>
+        <input type="text" id="name-input" placeholder="e.g. Alex" maxlength="30" autocomplete="off" />
+      </div>
+      <button id="name-btn" class="name-btn">Continue</button>
+      <div id="name-error-box" class="error-box hidden"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     GROUP CHOICE SCREEN
+══════════════════════════════════ -->
+<div id="group-choice-screen" class="group-choice-screen hidden">
+  <div class="choice-theme-toggle">
+    <button class="theme-toggle-btn" id="choice-theme-btn" title="Toggle dark mode">🌙</button>
+  </div>
+  <div class="choice-card">
+    <div class="choice-header">
+      <div class="user-greeting">Welcome, <strong id="user-name-display"></strong>!</div>
+      <h2 class="choice-title">What would you like to do?</h2>
+    </div>
+    <div class="choice-buttons">
+      <button id="join-group-choice-btn" class="choice-btn">
+        <span class="choice-icon">🔗</span>
+        <div class="choice-text">
+          <div class="choice-text-title">Join Existing Group</div>
+          <div class="choice-text-desc">Enter a group code to join</div>
+        </div>
+      </button>
+      <button id="create-group-choice-btn" class="choice-btn">
+        <span class="choice-icon">➕</span>
+        <div class="choice-text">
+          <div class="choice-text-title">Create New Group</div>
+          <div class="choice-text-desc">Start a new group as admin</div>
+        </div>
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     JOIN GROUP SCREEN
+══════════════════════════════════ -->
+<div id="join-screen" class="join-screen hidden">
+  <button class="join-back-btn" id="join-back-btn" title="Back">←</button>
   <div class="join-theme-toggle">
     <button class="theme-toggle-btn" id="join-theme-btn" title="Toggle dark mode">🌙</button>
   </div>
   <div class="join-card">
     <div class="join-header">
       <div class="logo-mark">◎</div>
-      <h1 class="app-title">Gather</h1>
-      <p class="app-subtitle">Real-time group location sharing</p>
+      <h1 class="app-title">Join Group</h1>
+      <p class="app-subtitle">Enter the group code to join</p>
     </div>
     <div class="join-form">
       <div class="input-group">
-        <label for="name-input">Your Name</label>
-        <input type="text" id="name-input" placeholder="e.g. Alex" maxlength="30" autocomplete="off" />
-      </div>
-      <div class="input-group">
         <label for="group-input">Group Code</label>
         <input type="text" id="group-input" placeholder="e.g. HIKING42" maxlength="20" autocomplete="off" />
-      </div>
-      <!-- Status row: shown after group code is checked -->
-      <div class="group-status-row" id="group-status-row"></div>
-      <!-- Password field: only shown when creating a NEW group -->
-      <div class="input-group password-row hidden" id="password-row">
-        <label for="password-input">Admin Password <span style="font-weight:400;color:var(--muted)">(set for your group)</span></label>
-        <input type="password" id="password-input" placeholder="Choose a password" maxlength="50" autocomplete="new-password" />
       </div>
       <button id="join-btn" class="join-btn">
         <span id="join-btn-text">Join Group</span>
         <span id="join-spinner" class="spinner hidden"></span>
       </button>
-      <div id="error-box" class="error-box hidden"></div>
-      <div id="debug-box" class="debug-box hidden"></div>
+      <div id="join-error-box" class="error-box hidden"></div>
+      <div id="join-debug-box" class="debug-box hidden"></div>
     </div>
-    <p class="join-hint">New group code → set a password to become <strong>Admin 👑</strong>.<br>Existing code → just enter your name to join.</p>
+    <p class="join-hint">Ask the group admin for the group code to join their session.</p>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     CREATE GROUP SCREEN
+══════════════════════════════════ -->
+<div id="create-screen" class="create-screen hidden">
+  <button class="create-back-btn" id="create-back-btn" title="Back">←</button>
+  <div class="join-theme-toggle">
+    <button class="theme-toggle-btn" id="create-theme-btn" title="Toggle dark mode">🌙</button>
+  </div>
+  <div class="create-card">
+    <div class="create-header">
+      <div class="logo-mark">◎</div>
+      <h1 class="app-title">Create Group</h1>
+      <p class="app-subtitle">Start a new group as admin 👑</p>
+    </div>
+    <div class="create-form">
+      <div class="input-group">
+        <label for="create-group-input">Group Code</label>
+        <input type="text" id="create-group-input" placeholder="e.g. HIKING42" maxlength="20" autocomplete="off" />
+      </div>
+      <button id="create-btn" class="create-btn">
+        <span id="create-btn-text">Create Group</span>
+        <span id="create-spinner" class="spinner hidden"></span>
+      </button>
+      <div id="create-error-box" class="error-box hidden"></div>
+      <div id="create-debug-box" class="debug-box hidden"></div>
+    </div>
+    <p class="create-hint">You'll become the admin 👑 of this group with the ability to manage members.</p>
   </div>
 </div>
 
@@ -503,10 +682,32 @@
           No messages yet. Say hello!
         </div>
       </div>
+      <div class="typing-indicator" id="typing-indicator">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>
       <div class="chat-input-row">
         <textarea id="chat-input" class="chat-input" placeholder="Type a message…" rows="1" maxlength="300"></textarea>
+        <button id="voice-chat-btn" class="voice-chat-btn" title="Voice message">🎤</button>
+        <button id="voice-call-btn" class="voice-call-btn" title="Voice call">📞</button>
         <button id="chat-send-btn" class="chat-send-btn">➤</button>
       </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     VOICE CALL MODAL
+══════════════════════════════════ -->
+<div id="voice-call-modal" class="voice-call-modal">
+  <div class="voice-call-box">
+    <div class="voice-call-icon" id="voice-call-icon">📞</div>
+    <div class="voice-call-status" id="voice-call-status">Calling...</div>
+    <div class="voice-call-name" id="voice-call-name"></div>
+    <div class="voice-call-timer" id="voice-call-timer">00:00</div>
+    <div class="voice-call-actions">
+      <button class="voice-call-end" id="voice-call-end">End Call</button>
     </div>
   </div>
 </div>
@@ -518,7 +719,7 @@
   <div class="kicked-icon" id="kicked-icon">🚫</div>
   <div class="kicked-title" id="kicked-title">You've been removed</div>
   <div class="kicked-body"  id="kicked-body">The admin removed you from this group.</div>
-  <button class="kicked-btn" id="kicked-back-btn">Back to Join</button>
+  <button class="kicked-btn" id="kicked-back-btn">Back to Start</button>
 </div>
 
 <!-- ══════════════════════════════════
@@ -571,46 +772,71 @@ let tileLayer = null;
 
 /* ─── DOM ─── */
 const $ = id => document.getElementById(id);
-const joinScreen      = $('join-screen');
-const mapScreen       = $('map-screen');
-const kickedScreen    = $('kicked-screen');
-const nameInput       = $('name-input');
-const groupInput      = $('group-input');
-const joinBtn         = $('join-btn');
-const joinBtnText     = $('join-btn-text');
-const joinSpinner     = $('join-spinner');
-const errorBox        = $('error-box');
-const debugBox        = $('debug-box');
-const leaveBtn        = $('leave-btn');
-const toggleSideBtn   = $('toggle-sidebar-btn');
-const chatToggleBtn   = $('chat-toggle-btn');
-const chatBadge       = $('chat-badge');
-const displayCode     = $('display-group-code');
-const adminCrown      = $('admin-crown');
-const sidebar         = $('sidebar');
-const memberList      = $('member-list');
-const memberCount     = $('member-count');
-const deleteGroupBtn  = $('delete-group-btn');
-const chatMessages    = $('chat-messages');
-const chatEmpty       = $('chat-empty');
-const chatInput       = $('chat-input');
-const chatSendBtn     = $('chat-send-btn');
-const themeBtn        = $('theme-btn');
-const joinThemeBtn    = $('join-theme-btn');
-const mapEl           = $('map');
-const modalOverlay    = $('modal-overlay');
-const modalIcon       = $('modal-icon');
-const modalTitle      = $('modal-title');
-const modalBody       = $('modal-body');
-const modalCancel     = $('modal-cancel');
-const modalConfirm    = $('modal-confirm');
-const kickedBackBtn   = $('kicked-back-btn');
-const passwordRow     = $('password-row');
-const passwordInput   = $('password-input');
-const groupStatusRow  = $('group-status-row');
-const stylePickerBtns = document.querySelectorAll('.map-style-btn');
-const tabBtns         = document.querySelectorAll('.tab-btn');
-const tabPanels       = { members: $('tab-members'), chat: $('tab-chat') };
+const nameScreen       = $('name-screen');
+const groupChoiceScreen = $('group-choice-screen');
+const joinScreen       = $('join-screen');
+const createScreen     = $('create-screen');
+const mapScreen        = $('map-screen');
+const kickedScreen     = $('kicked-screen');
+const nameInput        = $('name-input');
+const nameBtn          = $('name-btn');
+const nameErrorBox     = $('name-error-box');
+const userNameDisplay  = $('user-name-display');
+const joinGroupChoiceBtn = $('join-group-choice-btn');
+const createGroupChoiceBtn = $('create-group-choice-btn');
+const groupInput       = $('group-input');
+const joinBtn          = $('join-btn');
+const joinBtnText      = $('join-btn-text');
+const joinSpinner      = $('join-spinner');
+const joinErrorBox     = $('join-error-box');
+const joinDebugBox     = $('join-debug-box');
+const joinBackBtn      = $('join-back-btn');
+const createGroupInput = $('create-group-input');
+const createBtn        = $('create-btn');
+const createBtnText    = $('create-btn-text');
+const createSpinner    = $('create-spinner');
+const createErrorBox   = $('create-error-box');
+const createDebugBox   = $('create-debug-box');
+const createBackBtn    = $('create-back-btn');
+const leaveBtn         = $('leave-btn');
+const toggleSideBtn    = $('toggle-sidebar-btn');
+const chatToggleBtn    = $('chat-toggle-btn');
+const chatBadge        = $('chat-badge');
+const displayCode      = $('display-group-code');
+const adminCrown       = $('admin-crown');
+const sidebar          = $('sidebar');
+const memberList       = $('member-list');
+const memberCount      = $('member-count');
+const deleteGroupBtn   = $('delete-group-btn');
+const chatMessages     = $('chat-messages');
+const chatEmpty        = $('chat-empty');
+const chatInput        = $('chat-input');
+const chatSendBtn      = $('chat-send-btn');
+const voiceChatBtn     = $('voice-chat-btn');
+const voiceCallBtn     = $('voice-call-btn');
+const typingIndicator  = $('typing-indicator');
+const themeBtn         = $('theme-btn');
+const nameThemeBtn     = $('name-theme-btn');
+const choiceThemeBtn   = $('choice-theme-btn');
+const joinThemeBtn     = $('join-theme-btn');
+const createThemeBtn   = $('create-theme-btn');
+const mapEl            = $('map');
+const modalOverlay     = $('modal-overlay');
+const modalIcon        = $('modal-icon');
+const modalTitle       = $('modal-title');
+const modalBody        = $('modal-body');
+const modalCancel      = $('modal-cancel');
+const modalConfirm     = $('modal-confirm');
+const kickedBackBtn    = $('kicked-back-btn');
+const stylePickerBtns  = document.querySelectorAll('.map-style-btn');
+const tabBtns          = document.querySelectorAll('.tab-btn');
+const tabPanels        = { members: $('tab-members'), chat: $('tab-chat') };
+const voiceCallModal   = $('voice-call-modal');
+const voiceCallIcon    = $('voice-call-icon');
+const voiceCallStatus  = $('voice-call-status');
+const voiceCallName    = $('voice-call-name');
+const voiceCallTimer   = $('voice-call-timer');
+const voiceCallEnd     = $('voice-call-end');
 
 /* ══════════════════════════════════════
    CONFIRM MODAL
@@ -638,11 +864,11 @@ applyTheme();
 function applyTheme(){
   document.documentElement.setAttribute('data-theme', darkMode ? 'dark' : 'light');
   const icon = darkMode ? '☀️' : '🌙';
-  themeBtn.textContent = joinThemeBtn.textContent = icon;
+  themeBtn.textContent = nameThemeBtn.textContent = choiceThemeBtn.textContent = joinThemeBtn.textContent = createThemeBtn.textContent = icon;
   localStorage.setItem('gather-dark', darkMode);
   updateMapInvertClass();
 }
-[themeBtn, joinThemeBtn].forEach(b => b.addEventListener('click', () => { darkMode = !darkMode; applyTheme(); }));
+[themeBtn, nameThemeBtn, choiceThemeBtn, joinThemeBtn, createThemeBtn].forEach(b => b.addEventListener('click', () => { darkMode = !darkMode; applyTheme(); }));
 function updateMapInvertClass(){
   MAP_STYLES[currentStyle]?.noInvert ? mapEl.classList.add('no-invert') : mapEl.classList.remove('no-invert');
 }
@@ -665,7 +891,6 @@ stylePickerBtns.forEach(btn => {
     updateMapInvertClass();
   });
 });
-// Restore saved style button
 stylePickerBtns.forEach(b => b.classList.toggle('active', b.dataset.style === currentStyle));
 
 /* ══════════════════════════════════════
@@ -692,14 +917,9 @@ chatToggleBtn.addEventListener('click', () => {
 /* ══════════════════════════════════════
    HELPERS
 ══════════════════════════════════════ */
-const showError = html => { errorBox.innerHTML = html; errorBox.classList.remove('hidden'); };
-const showDebug = txt  => { debugBox.textContent = txt; debugBox.classList.remove('hidden'); };
-const clearMsgs = ()   => { errorBox.classList.add('hidden'); debugBox.classList.add('hidden'); };
-const setLoading = on  => {
-  joinBtn.disabled = on;
-  joinBtnText.textContent = on ? 'Joining…' : 'Join Group';
-  joinSpinner.classList.toggle('hidden', !on);
-};
+const showError = (box, html) => { box.innerHTML = html; box.classList.remove('hidden'); };
+const showDebug = (box, txt)  => { box.textContent = txt; box.classList.remove('hidden'); };
+const clearMsgs = (errorBox, debugBox) => { errorBox.classList.add('hidden'); debugBox.classList.add('hidden'); };
 const esc      = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 const toRad    = d => d * Math.PI / 180;
 const fmtDist  = m => m < 1000 ? `${Math.round(m)}m` : `${(m/1000).toFixed(1)}km`;
@@ -715,21 +935,26 @@ function scrollChat(){ setTimeout(()=>{ chatMessages.scrollTop=chatMessages.scro
    STATE
 ══════════════════════════════════════ */
 let db, map;
-let watchId=null, unsubscribe=null, unsubChat=null, unsubGroup=null, memberDocRef=null;
+let watchId=null, unsubscribe=null, unsubChat=null, unsubGroup=null, unsubTyping=null, memberDocRef=null;
 let memberId=null, myName=null, myColor=null, groupCode=null;
 let myLat=null, myLng=null, updateInterval=null;
-let isAdmin = false;         // Is current user the admin?
-let adminId  = null;         // Current group's admin memberId
-let myIp     = null;         // Client IP fetched at startup
+let isAdmin = false;
+let adminId  = null;
+let myIp     = null;
 const markers = {};
 const memberLastMsg = {};
+let typingTimeout = null;
+let mediaRecorder = null;
+let audioChunks = [];
+let currentCall = null;
+let callTimer = null;
 
 /* ─── Firebase init ─── */
 try {
   const fbApp = initializeApp(firebaseConfig);
   db = getFirestore(fbApp);
-  showDebug('✅ Firebase ready — enter your name and group code');
-} catch(e) { showError('❌ Firebase failed: ' + e.message); }
+  console.log('✅ Firebase ready');
+} catch(e) { showError(nameErrorBox, '❌ Firebase failed: ' + e.message); }
 
 /* ─── Fetch client IP at startup ─── */
 (async () => {
@@ -738,182 +963,238 @@ try {
     const j = await r.json();
     myIp = j.ip || null;
   } catch(e) {
-    myIp = null; // graceful fallback — IP check skipped if fetch fails
+    myIp = null;
     console.warn('IP fetch failed:', e);
   }
 })();
 
+/* ══════════════════════════════════════
+   NAME ENTRY FLOW
+══════════════════════════════════════ */
+nameBtn.addEventListener('click', handleNameEntry);
+nameInput.addEventListener('keydown', e => { if(e.key==='Enter') handleNameEntry(); });
+
+function handleNameEntry(){
+  const name = nameInput.value.trim();
+  nameErrorBox.classList.add('hidden');
+  if (!name) return showError(nameErrorBox, '⚠️ Please enter your name.');
+  if (!db) return showError(nameErrorBox, '❌ Firebase not ready. Refresh the page.');
+  
+  myName = name;
+  userNameDisplay.textContent = name;
+  nameScreen.classList.add('hidden');
+  groupChoiceScreen.classList.remove('hidden');
+}
+
+/* ══════════════════════════════════════
+   GROUP CHOICE FLOW
+══════════════════════════════════════ */
+joinGroupChoiceBtn.addEventListener('click', () => {
+  groupChoiceScreen.classList.add('hidden');
+  joinScreen.classList.remove('hidden');
+});
+
+createGroupChoiceBtn.addEventListener('click', () => {
+  groupChoiceScreen.classList.add('hidden');
+  createScreen.classList.remove('hidden');
+});
+
+joinBackBtn.addEventListener('click', () => {
+  joinScreen.classList.add('hidden');
+  groupChoiceScreen.classList.remove('hidden');
+  groupInput.value = '';
+  clearMsgs(joinErrorBox, joinDebugBox);
+});
+
+createBackBtn.addEventListener('click', () => {
+  createScreen.classList.add('hidden');
+  groupChoiceScreen.classList.remove('hidden');
+  createGroupInput.value = '';
+  clearMsgs(createErrorBox, createDebugBox);
+});
+
 /* ─── Group code uppercase ─── */
-groupInput.addEventListener('input', () => {
-  const p = groupInput.selectionStart;
-  groupInput.value = groupInput.value.toUpperCase();
-  groupInput.setSelectionRange(p,p);
+[groupInput, createGroupInput].forEach(inp => {
+  inp.addEventListener('input', () => {
+    const p = inp.selectionStart;
+    inp.value = inp.value.toUpperCase();
+    inp.setSelectionRange(p,p);
+  });
 });
 
 /* ══════════════════════════════════════
-   GROUP STATE (checked on join button press)
+   JOIN EXISTING GROUP
 ══════════════════════════════════════ */
-let groupIsNew = false; // determined during joinGroup()
+joinBtn.addEventListener('click', handleJoinGroup);
+groupInput.addEventListener('keydown', e => { if(e.key==='Enter') handleJoinGroup(); });
 
-/* ══════════════════════════════════════
-   JOIN
-══════════════════════════════════════ */
-joinBtn.addEventListener('click', handleJoin);
-[nameInput, groupInput, passwordInput].forEach(el => el.addEventListener('keydown', e => { if(e.key==='Enter') handleJoin(); }));
-
-async function handleJoin(){
-  const name = nameInput.value.trim();
+async function handleJoinGroup(){
   const code = groupInput.value.trim().toUpperCase();
-  const pass = passwordInput.value.trim();
-  clearMsgs();
-  if (!name) return showError('⚠️ Please enter your name.');
-  if (!code) return showError('⚠️ Please enter a group code.');
-  if (!db)   return showError('❌ Firebase not ready. Refresh the page.');
+  clearMsgs(joinErrorBox, joinDebugBox);
+  if (!code) return showError(joinErrorBox, '⚠️ Please enter a group code.');
+  if (!db) return showError(joinErrorBox, '❌ Firebase not ready. Refresh the page.');
 
-  // ── Check group existence on button press ──
-  setLoading(true);
-  showDebug('🔍 Checking group…');
+  setJoinLoading(true);
+  showDebug(joinDebugBox, '🔍 Checking group…');
+
   try {
     const snap = await getDoc(doc(db, 'groups', code));
-    groupIsNew = !(snap.exists() && snap.data()?.adminId);
+    if (!snap.exists() || !snap.data()?.adminId) {
+      setJoinLoading(false);
+      return showError(joinErrorBox, '❌ Group does not exist. Check the code or create a new group.');
+    }
   } catch(e) {
-    setLoading(false);
-    return showError('❌ Could not reach server. Check your connection.');
+    setJoinLoading(false);
+    return showError(joinErrorBox, '❌ Could not reach server. Check your connection.');
   }
 
-  // ── If new group and no password entered yet → reveal password field and stop ──
-  if (groupIsNew && !pass) {
-    setLoading(false);
-    passwordRow.classList.remove('hidden');
-    groupStatusRow.innerHTML = '<span class="new-group-badge">👑 New group — set a password to become Admin</span>';
-    passwordInput.focus();
-    clearMsgs();
-    return;
-  }
-
-  // ── If existing group, hide password field ──
-  if (!groupIsNew) {
-    passwordRow.classList.add('hidden');
-    passwordInput.value = '';
-    groupStatusRow.innerHTML = '<span style="font-size:.8rem;color:var(--online)">✅ Joining existing group…</span>';
-  }
-
-  if (!navigator.geolocation) { setLoading(false); return showError('❌ Geolocation not supported.'); }
-  showDebug('📍 Requesting location…');
+  if (!navigator.geolocation) { setJoinLoading(false); return showError(joinErrorBox, '❌ Geolocation not supported.'); }
+  showDebug(joinDebugBox, '📍 Requesting location…');
   navigator.geolocation.getCurrentPosition(
-    pos => { myLat = pos.coords.latitude; myLng = pos.coords.longitude; showDebug('📍 Got location.\n⏳ Connecting…'); joinGroup(name, code, groupIsNew ? pass : ''); },
-    err  => { setLoading(false); const m={1:'❌ <b>Location denied.</b> Click 🔒 → Allow Location → reload.',2:'❌ <b>Location unavailable.</b> Enable GPS.',3:'❌ <b>Timed out.</b> Try again.'}; showError(m[err.code]||'❌ '+err.message); },
+    pos => { myLat = pos.coords.latitude; myLng = pos.coords.longitude; showDebug(joinDebugBox, '📍 Got location.\n⏳ Connecting…'); joinGroup(code, false); },
+    err  => { setJoinLoading(false); const m={1:'❌ <b>Location denied.</b> Click 🔒 → Allow Location → reload.',2:'❌ <b>Location unavailable.</b> Enable GPS.',3:'❌ <b>Timed out.</b> Try again.'}; showError(joinErrorBox, m[err.code]||'❌ '+err.message); },
     { timeout:15000, enableHighAccuracy:false }
   );
 }
 
-async function joinGroup(name, code, pass){
+function setJoinLoading(on){
+  joinBtn.disabled = on;
+  joinBtnText.textContent = on ? 'Joining…' : 'Join Group';
+  joinSpinner.classList.toggle('hidden', !on);
+}
+
+/* ══════════════════════════════════════
+   CREATE NEW GROUP
+══════════════════════════════════════ */
+createBtn.addEventListener('click', handleCreateGroup);
+createGroupInput.addEventListener('keydown', e => { if(e.key==='Enter') handleCreateGroup(); });
+
+async function handleCreateGroup(){
+  const code = createGroupInput.value.trim().toUpperCase();
+  clearMsgs(createErrorBox, createDebugBox);
+  if (!code) return showError(createErrorBox, '⚠️ Please enter a group code.');
+  if (!db) return showError(createErrorBox, '❌ Firebase not ready. Refresh the page.');
+
+  setCreateLoading(true);
+  showDebug(createDebugBox, '🔍 Checking if group exists…');
+
+  try {
+    const snap = await getDoc(doc(db, 'groups', code));
+    if (snap.exists() && snap.data()?.adminId) {
+      setCreateLoading(false);
+      return showError(createErrorBox, '❌ Group already exists. Choose a different code or join the existing group.');
+    }
+  } catch(e) {
+    setCreateLoading(false);
+    return showError(createErrorBox, '❌ Could not reach server. Check your connection.');
+  }
+
+  if (!navigator.geolocation) { setCreateLoading(false); return showError(createErrorBox, '❌ Geolocation not supported.'); }
+  showDebug(createDebugBox, '📍 Requesting location…');
+  navigator.geolocation.getCurrentPosition(
+    pos => { myLat = pos.coords.latitude; myLng = pos.coords.longitude; showDebug(createDebugBox, '📍 Got location.\n⏳ Creating group…'); joinGroup(code, true); },
+    err  => { setCreateLoading(false); const m={1:'❌ <b>Location denied.</b> Click 🔒 → Allow Location → reload.',2:'❌ <b>Location unavailable.</b> Enable GPS.',3:'❌ <b>Timed out.</b> Try again.'}; showError(createErrorBox, m[err.code]||'❌ '+err.message); },
+    { timeout:15000, enableHighAccuracy:false }
+  );
+}
+
+function setCreateLoading(on){
+  createBtn.disabled = on;
+  createBtnText.textContent = on ? 'Creating…' : 'Create Group';
+  createSpinner.classList.toggle('hidden', !on);
+}
+
+/* ══════════════════════════════════════
+   JOIN GROUP (UNIFIED)
+══════════════════════════════════════ */
+async function joinGroup(code, isNewGroup){
   try {
     groupCode = code;
     memberId  = genId();
-    myName    = name;
     myColor   = randColor();
     memberDocRef = doc(db, 'groups', code, 'members', memberId);
 
     const groupDocRef = doc(db, 'groups', code);
-    const groupSnap   = await getDoc(groupDocRef);
-    const groupExists = groupSnap.exists() && groupSnap.data()?.adminId;
 
-    if (!groupExists) {
-      /* ══ NEW GROUP: creator becomes admin, password stored ══ */
+    if (isNewGroup) {
       isAdmin = true;
       adminId = memberId;
-      // Store hashed-ish password (btoa is not secure but fine for no-auth app)
-      const storedPass = btoa(pass.toLowerCase().trim());
       await setDoc(groupDocRef, {
         adminId: memberId,
-        adminPass: storedPass,
         createdAt: Date.now()
       }, { merge: true });
     } else {
-      /* ══ EXISTING GROUP: just read meta, no password needed ══ */
-      adminId = groupSnap.data().adminId;
-      isAdmin = false; // Joining members are never admin unless resuming admin name
+      const groupSnap = await getDoc(groupDocRef);
+      adminId = groupSnap.data()?.adminId;
+      isAdmin = false;
     }
 
-    /* ── Fetch all existing members for IP + name checks ── */
     const existingSnap = await getDocs(collection(db, 'groups', code, 'members'));
-
-    /* ══════════════════════════════════════
-       IP + NAME MATCHING LOGIC
-       - IP & name both match  → silent auto-resume (same person, same device)
-       - IP matches, name differs → block (one username per IP per group)
-       - Name matches, IP differs → block (name taken by someone else)
-       - Both new               → create fresh member
-       - Same IP, different group → always allowed
-    ══════════════════════════════════════ */
     const ipDoc   = myIp  ? existingSnap.docs.find(d => !d.data().kicked && d.data().ip   === myIp)  : null;
-    const nameDoc = existingSnap.docs.find(d => !d.data().kicked && d.data().name?.trim().toLowerCase() === name.trim().toLowerCase());
+    const nameDoc = existingSnap.docs.find(d => !d.data().kicked && d.data().name?.trim().toLowerCase() === myName.trim().toLowerCase());
 
     if (ipDoc && nameDoc && ipDoc.id === nameDoc.id) {
-      /* ── CASE 1: IP + name both match → silent resume ── */
       memberId     = ipDoc.id;
       myColor      = ipDoc.data().color;
       memberDocRef = doc(db, 'groups', code, 'members', memberId);
       if (memberId === adminId) { isAdmin = true; }
       await setDoc(memberDocRef, {
-        name, latitude: myLat, longitude: myLng,
+        name: myName, latitude: myLat, longitude: myLng,
         lastUpdated: Date.now(), color: myColor,
         kicked: false, ip: myIp || 'unknown'
       }, { merge: true });
       if (isAdmin) await setDoc(groupDocRef, { adminId: memberId }, { merge: true });
 
     } else if (ipDoc && (!nameDoc || ipDoc.id !== nameDoc?.id)) {
-      /* ── CASE 2: IP already in group under a different name → block (no name shown) ── */
-      setLoading(false);
-      showError('⚠️ Your device is already registered in this group. Only one account per device is allowed.');
+      setJoinLoading(false);
+      setCreateLoading(false);
+      const errBox = isNewGroup ? createErrorBox : joinErrorBox;
+      showError(errBox, '⚠️ Your device is already registered in this group. Only one account per device is allowed.');
       return;
 
     } else if (nameDoc && !ipDoc) {
-      /* ── CASE 3: Name taken by a different device → block ── */
-      setLoading(false);
-      showError(`⚠️ The name <strong>"${esc(name)}"</strong> is already taken. Please choose a different name.`);
-      nameInput.focus();
+      setJoinLoading(false);
+      setCreateLoading(false);
+      const errBox = isNewGroup ? createErrorBox : joinErrorBox;
+      showError(errBox, `⚠️ The name <strong>"${esc(myName)}"</strong> is already taken. Please choose a different name.`);
       return;
 
     } else {
-      /* ── CASE 4: Both new → fresh member ── */
       await setDoc(memberDocRef, {
-        name, latitude: myLat, longitude: myLng,
+        name: myName, latitude: myLat, longitude: myLng,
         lastUpdated: Date.now(), color: myColor,
         kicked: false, ip: myIp || 'unknown'
       });
     }
 
-    clearMsgs();
-    // Reset password UI state
-    groupIsNew = false;
-    passwordRow.classList.add('hidden');
-    passwordInput.value = '';
-    groupStatusRow.innerHTML = '';
-
+    clearMsgs(joinErrorBox, joinDebugBox);
+    clearMsgs(createErrorBox, createDebugBox);
     showMapScreen(code);
-    startTracking(name, myColor);
+    startTracking(myName, myColor);
     subscribeToGroup(code);
     subscribeToGroupMeta(code);
     subscribeToChat(code);
+    subscribeToTyping(code);
     watchForKick(code);
-    setLoading(false);
+    setJoinLoading(false);
+    setCreateLoading(false);
   } catch(err){
-    setLoading(false);
+    setJoinLoading(false);
+    setCreateLoading(false);
     console.error(err);
+    const errBox = isNewGroup ? createErrorBox : joinErrorBox;
     if(err.code==='permission-denied'){
-      showError(`❌ <b>Firestore permission denied.</b><br><br>
+      showError(errBox, `❌ <b>Firestore permission denied.</b><br><br>
         Go to <a href="https://console.firebase.google.com" target="_blank" style="color:var(--accent)">Firebase Console</a>
         → Firestore → <b>Rules</b> → set <code>allow read, write: if true;</code> → <b>Publish</b>.`);
     } else {
-      showError(`❌ Firestore error: ${err.message}`);
+      showError(errBox, `❌ Firestore error: ${err.message}`);
     }
   }
 }
 
 /* ══════════════════════════════════════
-   WATCH FOR KICK (listen to own doc)
+   WATCH FOR KICK
 ══════════════════════════════════════ */
 function watchForKick(code){
   const myRef = doc(db, 'groups', code, 'members', memberId);
@@ -926,13 +1207,12 @@ function watchForKick(code){
 }
 
 /* ══════════════════════════════════════
-   WATCH GROUP META (admin changes)
+   WATCH GROUP META
 ══════════════════════════════════════ */
 function subscribeToGroupMeta(code){
   const groupDocRef = doc(db, 'groups', code);
   unsubGroup = onSnapshot(groupDocRef, snap => {
     if (!snap.exists()) {
-      // Group was deleted by admin
       handleKicked('deleted');
       return;
     }
@@ -945,15 +1225,15 @@ function subscribeToGroupMeta(code){
 function updateAdminUI(){
   adminCrown.classList.toggle('visible', isAdmin);
   deleteGroupBtn.classList.toggle('visible', isAdmin);
-  // Re-render sidebar to show/hide kick buttons
-  // (will be called naturally by member snapshot)
 }
 
 function handleKicked(reason){
-  // Stop everything
-  cleanup(false); // don't delete own doc since admin already removed it
+  cleanup(false);
   mapScreen.classList.add('hidden');
+  nameScreen.classList.add('hidden');
+  groupChoiceScreen.classList.add('hidden');
   joinScreen.classList.add('hidden');
+  createScreen.classList.add('hidden');
   if (reason === 'deleted'){
     $('kicked-icon').textContent  = '💥';
     $('kicked-title').textContent = 'Group Deleted';
@@ -968,13 +1248,10 @@ function handleKicked(reason){
 
 kickedBackBtn.addEventListener('click', () => {
   kickedScreen.classList.add('hidden');
-  joinScreen.classList.remove('hidden');
-  nameInput.value = groupInput.value = '';
-  passwordInput.value = '';
-  passwordRow.classList.add('hidden');
-  groupStatusRow.innerHTML = '';
-  groupIsNew = false;
-  showDebug('✅ Firebase ready — enter your name and group code');
+  nameScreen.classList.remove('hidden');
+  nameInput.value = '';
+  myName = null;
+  console.log('✅ Firebase ready — enter your name');
 });
 
 /* ══════════════════════════════════════
@@ -984,16 +1261,12 @@ async function kickMember(targetId, targetName){
   const confirmed = await showModal('🚫', 'Remove Member', `Remove <strong>${esc(targetName)}</strong> from the group?`, 'Remove');
   if (!confirmed) return;
   try {
-    // Mark as kicked — their watchForKick() will detect this and redirect them
     await updateDoc(doc(db, 'groups', groupCode, 'members', targetId), { kicked: true });
-    // Post system message in chat
     await addDoc(collection(db, 'groups', groupCode, 'chat'), {
       system: true, text: `👑 Admin removed ${targetName} from the group.`,
       ts: serverTimestamp()
     });
-    // Delete their marker immediately (onSnapshot will also catch it)
     if (markers[targetId]){ map && map.removeLayer(markers[targetId].marker); delete markers[targetId]; }
-    // Delete their member doc after short delay
     setTimeout(async () => {
       try { await deleteDoc(doc(db, 'groups', groupCode, 'members', targetId)); } catch(e){}
     }, 2000);
@@ -1007,22 +1280,19 @@ deleteGroupBtn.addEventListener('click', async () => {
   const confirmed = await showModal('🗑️', 'Delete Group', `Delete group <strong>${groupCode}</strong>? All members will be removed.`, 'Delete Group');
   if (!confirmed) return;
   try {
-    // Post system message
     await addDoc(collection(db, 'groups', groupCode, 'chat'), {
       system: true, text: `👑 Admin deleted the group. Goodbye everyone!`,
       ts: serverTimestamp()
     });
-    // Delete group doc — all members' subscribeToGroupMeta will detect this
     await deleteDoc(doc(db, 'groups', groupCode));
-    // Also delete all member docs
     const membersSnap = await getDocs(collection(db, 'groups', groupCode, 'members'));
     for (const d of membersSnap.docs) { try { await deleteDoc(d.ref); } catch(e){} }
-    // Admin also leaves
     cleanup(true);
     mapScreen.classList.add('hidden');
-    joinScreen.classList.remove('hidden');
-    nameInput.value = groupInput.value = '';
-    showDebug('✅ Group deleted. Start a new one!');
+    nameScreen.classList.remove('hidden');
+    nameInput.value = '';
+    myName = null;
+    console.log('✅ Group deleted. Start a new one!');
   } catch(e){ console.error('Delete group error:', e); }
 });
 
@@ -1031,6 +1301,7 @@ deleteGroupBtn.addEventListener('click', async () => {
 ══════════════════════════════════════ */
 function showMapScreen(code){
   joinScreen.classList.add('hidden');
+  createScreen.classList.add('hidden');
   mapScreen.classList.remove('hidden');
   displayCode.textContent = code;
   updateAdminUI();
@@ -1072,7 +1343,7 @@ function subscribeToGroup(code){
     const now = Date.now(), members = [];
     snapshot.forEach(snap => {
       const d = snap.data(), id = snap.id;
-      if (d.kicked) return; // skip kicked members from display
+      if (d.kicked) return;
       const online = (now - (d.lastUpdated || 0)) < 60000;
       members.push({ id, ...d, online, isMe: id === memberId });
       updateMarker(id, d, online, id === memberId);
@@ -1096,10 +1367,13 @@ function subscribeToChat(code){
         const d = change.doc.data();
         if (d.system){
           renderSystemMsg(d.text, firstLoad);
+        } else if (d.isVoice) {
+          const isMe = d.senderId === memberId;
+          renderVoiceMsg(change.doc.id, d, isMe, firstLoad);
         } else {
           const isMe = d.senderId === memberId;
           memberLastMsg[d.senderId] = { text: d.text };
-          renderChatMsg(d, isMe, firstLoad);
+          renderChatMsg(change.doc.id, d, isMe, firstLoad);
           if (!isMe && !firstLoad){
             if (activeTab !== 'chat' || sidebar.classList.contains('collapsed')){
               unreadChat++;
@@ -1124,17 +1398,55 @@ function renderSystemMsg(text, silent){
   if (!silent) scrollChat();
 }
 
-function renderChatMsg(d, isMe, silent){
+function renderChatMsg(docId, d, isMe, silent){
   chatEmpty.classList.add('hidden');
   const div = document.createElement('div');
   div.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+  div.dataset.docId = docId;
   const ts = d.ts ? (d.ts.toMillis ? d.ts.toMillis() : d.ts) : Date.now();
   div.innerHTML = `
     ${!isMe ? `<div class="chat-msg-sender" style="color:${d.color||'var(--accent)'}">${esc(d.senderName)}</div>` : ''}
-    <div class="chat-msg-bubble">${esc(d.text)}</div>
+    <div class="chat-msg-bubble">${esc(d.text)}${isMe ? `<div class="chat-msg-delete" data-doc-id="${docId}">✕</div>` : ''}</div>
     <div class="chat-msg-time">${fmtTime(ts)}</div>`;
   chatMessages.appendChild(div);
+  if (isMe) {
+    const delBtn = div.querySelector('.chat-msg-delete');
+    if (delBtn) delBtn.addEventListener('click', () => deleteMessage(docId));
+  }
   if (!silent || isMe) scrollChat();
+}
+
+function renderVoiceMsg(docId, d, isMe, silent){
+  chatEmpty.classList.add('hidden');
+  const div = document.createElement('div');
+  div.className = `chat-msg ${isMe ? 'me' : 'other'}`;
+  div.dataset.docId = docId;
+  const ts = d.ts ? (d.ts.toMillis ? d.ts.toMillis() : d.ts) : Date.now();
+  const duration = d.duration || 0;
+  div.innerHTML = `
+    ${!isMe ? `<div class="chat-msg-sender" style="color:${d.color||'var(--accent)'}">${esc(d.senderName)}</div>` : ''}
+    <div class="chat-msg-bubble">
+      🎤 Voice message (${duration}s)
+      <audio controls style="width:100%;margin-top:6px;"><source src="${d.audioUrl}" type="audio/webm"></audio>
+      ${isMe ? `<div class="chat-msg-delete" data-doc-id="${docId}">✕</div>` : ''}
+    </div>
+    <div class="chat-msg-time">${fmtTime(ts)}</div>`;
+  chatMessages.appendChild(div);
+  if (isMe) {
+    const delBtn = div.querySelector('.chat-msg-delete');
+    if (delBtn) delBtn.addEventListener('click', () => deleteMessage(docId));
+  }
+  if (!silent || isMe) scrollChat();
+}
+
+async function deleteMessage(docId){
+  const confirmed = await showModal('🗑️', 'Delete Message', 'Delete this message permanently?', 'Delete');
+  if (!confirmed) return;
+  try {
+    await deleteDoc(doc(db, 'groups', groupCode, 'chat', docId));
+    const msgDiv = chatMessages.querySelector(`[data-doc-id="${docId}"]`);
+    if (msgDiv) msgDiv.remove();
+  } catch(e){ console.error('Delete message error:', e); }
 }
 
 async function sendMessage(){
@@ -1147,13 +1459,148 @@ async function sendMessage(){
     await addDoc(collection(db, 'groups', groupCode, 'chat'), {
       text, senderId:memberId, senderName:myName, color:myColor, ts:serverTimestamp()
     });
+    await updateDoc(doc(db, 'groups', groupCode, 'typing', memberId), { typing: false });
   } catch(e){ console.error(e); chatInput.value = text; }
   chatSendBtn.disabled = false;
   chatInput.focus();
 }
 chatSendBtn.addEventListener('click', sendMessage);
 chatInput.addEventListener('keydown', e => { if(e.key==='Enter'&&!e.shiftKey){ e.preventDefault(); sendMessage(); } });
-chatInput.addEventListener('input', () => { chatInput.style.height='auto'; chatInput.style.height=Math.min(chatInput.scrollHeight,80)+'px'; });
+chatInput.addEventListener('input', () => { 
+  chatInput.style.height='auto'; 
+  chatInput.style.height=Math.min(chatInput.scrollHeight,80)+'px';
+  handleTyping();
+});
+
+/* ══════════════════════════════════════
+   TYPING INDICATOR
+══════════════════════════════════════ */
+async function handleTyping(){
+  if (!groupCode || !memberId) return;
+  try {
+    await setDoc(doc(db, 'groups', groupCode, 'typing', memberId), { typing: true, name: myName }, { merge: true });
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(async () => {
+      await updateDoc(doc(db, 'groups', groupCode, 'typing', memberId), { typing: false });
+    }, 2000);
+  } catch(e){ console.error('Typing error:', e); }
+}
+
+function subscribeToTyping(code){
+  unsubTyping = onSnapshot(collection(db, 'groups', code, 'typing'), snapshot => {
+    const typingUsers = [];
+    snapshot.forEach(snap => {
+      const d = snap.data();
+      if (snap.id !== memberId && d.typing) typingUsers.push(d.name);
+    });
+    if (typingUsers.length > 0) {
+      typingIndicator.classList.add('active');
+      scrollChat();
+    } else {
+      typingIndicator.classList.remove('active');
+    }
+  });
+}
+
+/* ══════════════════════════════════════
+   VOICE CHAT (RECORDING)
+══════════════════════════════════════ */
+voiceChatBtn.addEventListener('click', async () => {
+  if (mediaRecorder && mediaRecorder.state === 'recording') {
+    mediaRecorder.stop();
+    voiceChatBtn.classList.remove('recording');
+    return;
+  }
+
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioChunks = [];
+    mediaRecorder = new MediaRecorder(stream);
+    
+    mediaRecorder.ondataavailable = e => { if (e.data.size > 0) audioChunks.push(e.data); };
+    mediaRecorder.onstop = async () => {
+      const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64 = reader.result.split(',')[1];
+        const duration = Math.round(audioChunks.length * 0.1);
+        try {
+          await addDoc(collection(db, 'groups', groupCode, 'chat'), {
+            isVoice: true,
+            audioUrl: `data:audio/webm;base64,${base64}`,
+            duration,
+            senderId: memberId,
+            senderName: myName,
+            color: myColor,
+            ts: serverTimestamp()
+          });
+        } catch(e){ console.error('Voice message error:', e); }
+      };
+      reader.readAsDataURL(audioBlob);
+      stream.getTracks().forEach(t => t.stop());
+    };
+
+    mediaRecorder.start();
+    voiceChatBtn.classList.add('recording');
+  } catch(e) {
+    console.error('Microphone access denied:', e);
+    alert('Microphone access denied. Please allow microphone access to send voice messages.');
+  }
+});
+
+/* ══════════════════════════════════════
+   VOICE CALL (VoIP)
+══════════════════════════════════════ */
+voiceCallBtn.addEventListener('click', async () => {
+  if (!groupCode) return;
+  // Simple demonstration - in production, use WebRTC with signaling server
+  try {
+    voiceCallModal.classList.add('active');
+    voiceCallIcon.textContent = '📞';
+    voiceCallStatus.textContent = 'Calling group...';
+    voiceCallName.textContent = `Group: ${groupCode}`;
+    
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    currentCall = { stream, startTime: Date.now() };
+    
+    // Start call timer
+    let seconds = 0;
+    voiceCallTimer.textContent = '00:00';
+    voiceCallStatus.textContent = 'Connected';
+    voiceCallIcon.textContent = '🔊';
+    
+    callTimer = setInterval(() => {
+      seconds++;
+      const m = Math.floor(seconds / 60).toString().padStart(2, '0');
+      const s = (seconds % 60).toString().padStart(2, '0');
+      voiceCallTimer.textContent = `${m}:${s}`;
+    }, 1000);
+    
+    // Broadcast to chat
+    await addDoc(collection(db, 'groups', groupCode, 'chat'), {
+      system: true,
+      text: `📞 ${myName} started a voice call`,
+      ts: serverTimestamp()
+    });
+  } catch(e) {
+    console.error('Call error:', e);
+    voiceCallModal.classList.remove('active');
+    alert('Microphone access denied or call failed.');
+  }
+});
+
+voiceCallEnd.addEventListener('click', () => {
+  if (currentCall) {
+    currentCall.stream.getTracks().forEach(t => t.stop());
+    currentCall = null;
+  }
+  if (callTimer) {
+    clearInterval(callTimer);
+    callTimer = null;
+  }
+  voiceCallModal.classList.remove('active');
+  voiceCallTimer.textContent = '00:00';
+});
 
 /* ══════════════════════════════════════
    MARKERS
@@ -1178,6 +1625,7 @@ function buildPopupHtml(id, data, online, isMe){
     ${lm?`<div class="popup-last-msg">💬 "${esc(lm.text)}"</div>`:''}
     <div class="popup-actions">
       <span class="popup-chat-link" id="popup-chat-${id}">💬 Chat</span>
+      ${!isMe?`<span class="popup-call-link" id="popup-call-${id}">📞 Call</span>`:''}
       ${canKick?`<span class="popup-kick-link show" id="popup-kick-${id}">🚫 Remove</span>`:''}
     </div>`;
 }
@@ -1204,6 +1652,11 @@ function wirePopupLinks(id, data){
     Object.entries(tabPanels).forEach(([k,el])=>el.classList.toggle('active',k==='chat'));
     unreadChat=0; chatBadge.classList.add('hidden'); scrollChat();
     setTimeout(()=>map&&map.invalidateSize(),320);
+  });
+  const callLink = document.getElementById(`popup-call-${id}`);
+  if (callLink) callLink.addEventListener('click', () => {
+    markers[id]?.marker.closePopup();
+    voiceCallBtn.click();
   });
   const kickLink = document.getElementById(`popup-kick-${id}`);
   if (kickLink) kickLink.addEventListener('click', () => {
@@ -1247,7 +1700,6 @@ function renderSidebar(members){
       ${dist!==null?`<div class="member-distance">${fmtDist(dist)}</div>`:''}
       <button class="kick-btn" title="Remove ${esc(m.name)}">✕</button>`;
 
-    // Click row → fly to member
     li.addEventListener('click', e => {
       if (e.target.classList.contains('kick-btn')) return;
       if (m.latitude && map){
@@ -1256,7 +1708,6 @@ function renderSidebar(members){
       }
     });
 
-    // Kick button
     const kickBtn = li.querySelector('.kick-btn');
     if (kickBtn) kickBtn.addEventListener('click', e => { e.stopPropagation(); kickMember(m.id, m.name); });
 
@@ -1270,13 +1721,10 @@ function renderSidebar(members){
 leaveBtn.addEventListener('click', async () => {
   cleanup(true);
   mapScreen.classList.add('hidden');
-  joinScreen.classList.remove('hidden');
-  nameInput.value = groupInput.value = '';
-  passwordInput.value = '';
-  passwordRow.classList.add('hidden');
-  groupStatusRow.innerHTML = '';
-  groupIsNew = false;
-  showDebug('✅ Firebase ready — enter your name and group code');
+  nameScreen.classList.remove('hidden');
+  nameInput.value = '';
+  myName = null;
+  console.log('✅ Firebase ready — enter your name');
 });
 
 async function cleanup(deleteSelf = true){
@@ -1285,7 +1733,11 @@ async function cleanup(deleteSelf = true){
   if (unsubscribe)       { unsubscribe(); unsubscribe = null; }
   if (unsubChat)         { unsubChat(); unsubChat = null; }
   if (unsubGroup)        { unsubGroup(); unsubGroup = null; }
+  if (unsubTyping)       { unsubTyping(); unsubTyping = null; }
   if (deleteSelf && memberDocRef) { try { await deleteDoc(memberDocRef); } catch(e){} memberDocRef = null; }
+  if (currentCall) { currentCall.stream.getTracks().forEach(t => t.stop()); currentCall = null; }
+  if (callTimer) { clearInterval(callTimer); callTimer = null; }
+  voiceCallModal.classList.remove('active');
   Object.values(markers).forEach(({marker}) => map && map.removeLayer(marker));
   Object.keys(markers).forEach(k => delete markers[k]);
   Object.keys(memberLastMsg).forEach(k => delete memberLastMsg[k]);
@@ -1300,21 +1752,14 @@ async function cleanup(deleteSelf = true){
   deleteGroupBtn.classList.remove('visible');
 }
 
-/* ─── Sidebar toggle ─── */
 toggleSideBtn.addEventListener('click', () => {
   sidebarOpen = !sidebarOpen;
   sidebar.classList.toggle('collapsed', !sidebarOpen);
   setTimeout(() => map && map.invalidateSize(), 320);
 });
 
-/* ──────────────────────────────────────
-   PREVENT ACCIDENTAL REFRESH / CLOSE
-   Block browser refresh/close while
-   the user is inside an active group
-────────────────────────────────────── */
 window.addEventListener('beforeunload', e => {
   if (memberId && groupCode) {
-    // Standard way to trigger browser's "Leave site?" dialog
     e.preventDefault();
     e.returnValue = 'You are in an active group. Leaving will remove you from the map.';
   }
