@@ -515,6 +515,9 @@ import {
   collection, addDoc, getDocs, onSnapshot,
   serverTimestamp, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+import {
+  getAuth, signInAnonymously, onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey:"AIzaSyBXE7dFGSdVG5Kiq_FxMskvsy1AHLzku0M",
@@ -699,24 +702,37 @@ let db, map;
 let watchId=null, unsubscribe=null, unsubChat=null, unsubGroup=null, unsubTyping=null, memberDocRef=null;
 let memberId=null, myName=null, myColor=null, groupCode=null;
 let myLat=null, myLng=null, updateInterval=null;
-let isAdmin=false, adminId=null, myIp=null;
+let isAdmin=false, adminId=null;
 const markers={}, memberLastMsg={};
 let typingTimeout=null, mediaRecorder=null, audioChunks=[];
 let currentCall=null, callTimer=null;
 
 /* ── FIREBASE INIT ── */
+let auth;
 try {
   const fbApp = initializeApp(firebaseConfig);
   db = getFirestore(fbApp);
+  auth = getAuth(fbApp);
 } catch(e) {
   autologinMsg.textContent = '❌ Firebase failed: ' + e.message;
 }
 
 /* ══════════════════════════════════════
-   SESSION PERSISTENCE
-   Saves name + color to localStorage on every join.
-   On startup, reads localStorage instantly — no IP fetch,
-   no collectionGroup — works identically on localhost and Vercel.
+   SESSION PERSISTENCE via Firebase Anonymous Auth
+   ─────────────────────────────────────
+   Firebase Auth gives every browser a stable anonymous uid
+   that persists across page refreshes and works on any host
+   (localhost, Vercel, custom domain) without IP or cookies.
+
+   We also mirror the uid to localStorage as deviceId so the
+   member doc can be looked up directly — one Firestore read,
+   no collectionGroup scan.
+
+   Flow:
+   1. signInAnonymously() → stable uid for this browser
+   2. Check localStorage for saved { name, color, deviceId }
+   3. If found + uid matches → show Welcome screen
+   4. Else → show name entry screen
 ══════════════════════════════════════ */
 function saveSession(data) {
   try { localStorage.setItem('gather-session', JSON.stringify(data)); } catch(e) {}
@@ -728,15 +744,29 @@ function clearSession() {
   try { localStorage.removeItem('gather-session'); } catch(e) {}
 }
 
-/* ══════════════════════════════════════
-   STARTUP: CHECK localStorage → WELCOME OR NAME SCREEN
-   Instant — no async, no network, works on every host.
-══════════════════════════════════════ */
 let foundSession = null;
+let deviceId = null; // Firebase anonymous uid — stable per browser
 
-function startup() {
+async function startup() {
+  if (!auth) { autologinScreen.classList.add('hidden'); nameScreen.classList.remove('hidden'); return; }
+
+  try {
+    // Sign in anonymously — returns immediately if already signed in
+    const credential = await signInAnonymously(auth);
+    deviceId = credential.user.uid;
+  } catch(e) {
+    console.warn('Anonymous auth failed, falling back to localStorage deviceId', e);
+    // Fallback: generate + store a random deviceId
+    deviceId = localStorage.getItem('gather-deviceId');
+    if (!deviceId) {
+      deviceId = genId();
+      localStorage.setItem('gather-deviceId', deviceId);
+    }
+  }
+
   const saved = loadSession();
-  if (saved?.name) {
+  if (saved?.name && saved?.deviceId === deviceId) {
+    // Same browser — welcome back
     foundSession = saved;
     myName  = saved.name;
     myColor = saved.color || randColor();
@@ -744,6 +774,7 @@ function startup() {
     autologinFoundState.style.display = 'flex';
     autologinGreeting.textContent = `Welcome back, ${myName}!`;
   } else {
+    // New browser or cleared session
     autologinScreen.classList.add('hidden');
     nameScreen.classList.remove('hidden');
   }
@@ -879,28 +910,28 @@ async function joinGroup(code, isNewGroup) {
     }
 
     const existingSnap = await getDocs(collection(db,'groups',code,'members'));
-    const ipDoc   = myIp ? existingSnap.docs.find(d=>!d.data().kicked&&d.data().ip===myIp) : null;
-    const nameDoc = existingSnap.docs.find(d=>!d.data().kicked&&d.data().name?.trim().toLowerCase()===myName.trim().toLowerCase());
+    // Check if this device already has a member doc in this group (by deviceId)
+    const deviceDoc = deviceId ? existingSnap.docs.find(d=>!d.data().kicked&&d.data().deviceId===deviceId) : null;
+    const nameDoc   = existingSnap.docs.find(d=>!d.data().kicked&&d.data().name?.trim().toLowerCase()===myName.trim().toLowerCase());
 
-    if(ipDoc&&nameDoc&&ipDoc.id===nameDoc.id){
-      memberId=ipDoc.id; myColor=ipDoc.data().color; memberDocRef=doc(db,'groups',code,'members',memberId);
+    if(deviceDoc){
+      // Same device rejoining — reuse existing member slot
+      memberId=deviceDoc.id; myColor=deviceDoc.data().color; memberDocRef=doc(db,'groups',code,'members',memberId);
       if(memberId===adminId){ isAdmin=true; }
-      await setDoc(memberDocRef,{name:myName,latitude:myLat,longitude:myLng,lastUpdated:Date.now(),color:myColor,kicked:false,ip:myIp||'unknown'},{merge:true});
+      await setDoc(memberDocRef,{name:myName,latitude:myLat,longitude:myLng,lastUpdated:Date.now(),color:myColor,kicked:false,deviceId:deviceId||'anon'},{merge:true});
       if(isAdmin) await setDoc(groupDocRef,{adminId:memberId},{merge:true});
-    } else if(ipDoc&&(!nameDoc||ipDoc.id!==nameDoc?.id)){
-      setJoinLoading(false); setCreateLoading(false);
-      showError(isNewGroup?createErrorBox:joinErrorBox,'⚠️ Your device is already registered in this group. Only one account per device is allowed.');
-      return;
-    } else if(nameDoc&&!ipDoc){
+    } else if(nameDoc){
+      // Different device, same name
       setJoinLoading(false); setCreateLoading(false);
       showError(isNewGroup?createErrorBox:joinErrorBox,`⚠️ The name <strong>"${esc(myName)}"</strong> is already taken. Please choose a different name.`);
       return;
     } else {
-      await setDoc(memberDocRef,{name:myName,latitude:myLat,longitude:myLng,lastUpdated:Date.now(),color:myColor,kicked:false,ip:myIp||'unknown'});
+      // New member
+      await setDoc(memberDocRef,{name:myName,latitude:myLat,longitude:myLng,lastUpdated:Date.now(),color:myColor,kicked:false,deviceId:deviceId||'anon'});
     }
 
     // Save session for welcome screen on next visit
-    saveSession({ name: myName, color: myColor });
+    saveSession({ name: myName, color: myColor, deviceId });
 
     clearMsgs(joinErrorBox,joinDebugBox); clearMsgs(createErrorBox,createDebugBox);
     showMapScreen(code);
