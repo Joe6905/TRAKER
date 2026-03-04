@@ -513,7 +513,7 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/fireba
 import {
   getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc,
   collection, addDoc, getDocs, onSnapshot,
-  serverTimestamp, query, orderBy, limit, collectionGroup
+  serverTimestamp, query, orderBy, limit
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 const firebaseConfig = {
@@ -713,106 +713,33 @@ try {
 }
 
 /* ══════════════════════════════════════
-   IP FETCH UTILITY
+   SESSION PERSISTENCE
+   Saves name + color to localStorage on every join.
+   On startup, reads localStorage instantly — no IP fetch,
+   no collectionGroup — works identically on localhost and Vercel.
 ══════════════════════════════════════ */
-async function fetchIP() {
-  const providers = [
-    'https://api.ipify.org?format=json',
-    'https://api64.ipify.org?format=json',
-    'https://api.my-ip.io/ip.json'
-  ];
-  for (const url of providers) {
-    try {
-      const r = await fetch(url, { signal: AbortSignal.timeout(4000) });
-      const j = await r.json();
-      const ip = j.ip || j.IP;
-      if (ip) return ip;
-    } catch(e) { continue; }
-  }
-  return null;
+function saveSession(data) {
+  try { localStorage.setItem('gather-session', JSON.stringify(data)); } catch(e) {}
+}
+function loadSession() {
+  try { const s = localStorage.getItem('gather-session'); return s ? JSON.parse(s) : null; } catch(e) { return null; }
+}
+function clearSession() {
+  try { localStorage.removeItem('gather-session'); } catch(e) {}
 }
 
 /* ══════════════════════════════════════
-   CHECK FOR EXISTING SESSION BY IP
-   Strategy:
-   1. Fast path: check localStorage-cached groupCode + memberId
-   2. Slow path: scan all members via collectionGroup
+   STARTUP: CHECK localStorage → WELCOME OR NAME SCREEN
+   Instant — no async, no network, works on every host.
 ══════════════════════════════════════ */
-async function findSessionByIP(ip) {
-  if (!ip || !db) return null;
+let foundSession = null;
 
-  // --- Fast path: check cached session ---
-  const savedGroup  = localStorage.getItem('gather-last-group');
-  const savedMember = localStorage.getItem('gather-last-member');
-
-  if (savedGroup && savedMember) {
-    try {
-      const memberSnap = await getDoc(doc(db, 'groups', savedGroup, 'members', savedMember));
-      if (memberSnap.exists()) {
-        const d = memberSnap.data();
-        if (!d.kicked && d.ip === ip && d.name) {
-          const groupSnap = await getDoc(doc(db, 'groups', savedGroup));
-          if (groupSnap.exists() && groupSnap.data()?.adminId) {
-            console.log('✅ Fast-path auto-login for', d.name, 'in group', savedGroup);
-            return { groupCode: savedGroup, memberId: savedMember, adminId: groupSnap.data().adminId, ...d };
-          }
-        }
-      }
-    } catch(e) { console.warn('Fast-path check failed:', e); }
-  }
-
-  // --- Slow path: scan all members across all groups ---
-  try {
-    autologinMsg.textContent = 'Searching your previous groups…';
-    const allSnap = await getDocs(query(collectionGroup(db, 'members')));
-    for (const mDoc of allSnap.docs) {
-      const d = mDoc.data();
-      if (d.ip === ip && !d.kicked && d.name) {
-        // path = groups/{groupCode}/members/{memberId}
-        const parts = mDoc.ref.path.split('/');
-        const gCode = parts[1]; // index 1 in groups/GCODE/members/MID
-        try {
-          const groupSnap = await getDoc(doc(db, 'groups', gCode));
-          if (groupSnap.exists() && groupSnap.data()?.adminId) {
-            console.log('✅ Slow-path auto-login for', d.name, 'in group', gCode);
-            return { groupCode: gCode, memberId: mDoc.id, adminId: groupSnap.data().adminId, ...d };
-          }
-        } catch(e) { continue; }
-      }
-    }
-  } catch(e) { console.warn('Slow-path scan failed:', e); }
-
-  return null;
-}
-
-/* ══════════════════════════════════════
-   STARTUP: IP CHECK → WELCOME OR NORMAL FLOW
-   If IP found: show welcome screen with name pre-set + join/create buttons
-   If not found: show normal name entry
-══════════════════════════════════════ */
-let foundSession = null; // holds the session data if IP matched
-
-async function startup() {
-  if (!db) { autologinScreen.classList.add('hidden'); nameScreen.classList.remove('hidden'); return; }
-
-  autologinMsg.textContent = 'Identifying your device…';
-  myIp = await fetchIP();
-
-  if (!myIp) {
-    autologinScreen.classList.add('hidden');
-    nameScreen.classList.remove('hidden');
-    return;
-  }
-
-  autologinMsg.textContent = 'Checking for existing session…';
-  try { foundSession = await findSessionByIP(myIp); } catch(e) { console.warn('Session lookup error:', e); }
-
-  if (foundSession) {
-    // Pre-set name from saved session
-    myName  = foundSession.name;
-    myColor = foundSession.color || randColor();
-
-    // Show welcome screen with join/create buttons
+function startup() {
+  const saved = loadSession();
+  if (saved?.name) {
+    foundSession = saved;
+    myName  = saved.name;
+    myColor = saved.color || randColor();
     autologinCheckState.style.display = 'none';
     autologinFoundState.style.display = 'flex';
     autologinGreeting.textContent = `Welcome back, ${myName}!`;
@@ -841,8 +768,7 @@ autologinCreateBtn.addEventListener('click', () => {
 
 autologinNotMeBtn.addEventListener('click', () => {
   // Clear saved session and let them enter a new name
-  localStorage.removeItem('gather-last-group');
-  localStorage.removeItem('gather-last-member');
+  clearSession();
   myName = null; myColor = null; foundSession = null;
   autologinScreen.classList.add('hidden');
   nameScreen.classList.remove('hidden');
@@ -973,9 +899,8 @@ async function joinGroup(code, isNewGroup) {
       await setDoc(memberDocRef,{name:myName,latitude:myLat,longitude:myLng,lastUpdated:Date.now(),color:myColor,kicked:false,ip:myIp||'unknown'});
     }
 
-    // Save session hint for future auto-login
-    localStorage.setItem('gather-last-group', code);
-    localStorage.setItem('gather-last-member', memberId);
+    // Save session for welcome screen on next visit
+    saveSession({ name: myName, color: myColor });
 
     clearMsgs(joinErrorBox,joinDebugBox); clearMsgs(createErrorBox,createDebugBox);
     showMapScreen(code);
@@ -1020,8 +945,7 @@ function updateAdminUI(){ adminCrown.classList.toggle('visible',isAdmin); delete
 
 function handleKicked(reason){
   // Clear session so next visit starts fresh
-  localStorage.removeItem('gather-last-group');
-  localStorage.removeItem('gather-last-member');
+  clearSession();
   cleanup(false);
   mapScreen.classList.add('hidden');
   [nameScreen,groupChoiceScreen,joinScreen,createScreen].forEach(s=>s.classList.add('hidden'));
@@ -1062,8 +986,7 @@ deleteGroupBtn.addEventListener('click', async()=>{
     await deleteDoc(doc(db,'groups',groupCode));
     const membersSnap = await getDocs(collection(db,'groups',groupCode,'members'));
     for(const d of membersSnap.docs){ try{ await deleteDoc(d.ref); }catch(e){} }
-    localStorage.removeItem('gather-last-group');
-    localStorage.removeItem('gather-last-member');
+    clearSession();
     cleanup(true);
     mapScreen.classList.add('hidden');
     nameScreen.classList.remove('hidden');
@@ -1325,8 +1248,7 @@ function renderSidebar(members){
 
 /* ── LEAVE / CLEANUP ── */
 leaveBtn.addEventListener('click', async()=>{
-  localStorage.removeItem('gather-last-group');
-  localStorage.removeItem('gather-last-member');
+  clearSession();
   cleanup(true);
   mapScreen.classList.add('hidden');
   nameScreen.classList.remove('hidden');
