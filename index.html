@@ -914,19 +914,22 @@ async function joinGroup(code, isNewGroup) {
     const deviceDoc = deviceId ? existingSnap.docs.find(d=>!d.data().kicked&&d.data().deviceId===deviceId) : null;
     const nameDoc   = existingSnap.docs.find(d=>!d.data().kicked&&d.data().name?.trim().toLowerCase()===myName.trim().toLowerCase());
 
-    if(deviceDoc){
+    // matchDoc: same deviceId, OR same name AND same deviceId (returning user)
+    const matchDoc = deviceDoc || (nameDoc && nameDoc.data().deviceId === deviceId ? nameDoc : null);
+
+    if(matchDoc){
       // Same device rejoining — reuse existing member slot
-      memberId=deviceDoc.id; myColor=deviceDoc.data().color; memberDocRef=doc(db,'groups',code,'members',memberId);
+      memberId=matchDoc.id; myColor=matchDoc.data().color; memberDocRef=doc(db,'groups',code,'members',memberId);
       if(memberId===adminId){ isAdmin=true; }
       await setDoc(memberDocRef,{name:myName,latitude:myLat,longitude:myLng,lastUpdated:Date.now(),color:myColor,kicked:false,deviceId:deviceId||'anon'},{merge:true});
       if(isAdmin) await setDoc(groupDocRef,{adminId:memberId},{merge:true});
     } else if(nameDoc){
-      // Different device, same name
+      // Name taken by a DIFFERENT device — block
       setJoinLoading(false); setCreateLoading(false);
-      showError(isNewGroup?createErrorBox:joinErrorBox,`⚠️ The name <strong>"${esc(myName)}"</strong> is already taken. Please choose a different name.`);
+      showError(isNewGroup?createErrorBox:joinErrorBox,`⚠️ The name <strong>"${esc(myName)}"</strong> is already taken by another device.`);
       return;
     } else {
-      // New member
+      // Brand new member
       await setDoc(memberDocRef,{name:myName,latitude:myLat,longitude:myLng,lastUpdated:Date.now(),color:myColor,kicked:false,deviceId:deviceId||'anon'});
     }
 
